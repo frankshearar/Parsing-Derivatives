@@ -7,6 +7,16 @@ Object subclass: #SutureCompacter
 I compact parsers. To that end, I walk the graph of a parser in a post-order fashion. At each step I map a parser to its compacted form. Since the walk is post-order, a composite parser (Cat, Union) will have already had its subparsers mapped.!
 
 
+!SutureCompacter methodsFor: 'accessing' stamp: 'fbs 10/18/2012 09:54'!
+cached: aParser
+	"If a delegate doesn't form part of a cycle, it does no harm to point to the delegate's reference instead of the delegate. This also makes the parser one node smaller, potentially."
+	| p suture |
+	suture := cache at: aParser.
+	p := suture reference.
+	(p notNil and: [p isDelegate and: [(self formsACycle: p) not]]) ifTrue: [
+		^ cache at: p parser].
+	^ suture.! !
+
 
 !SutureCompacter methodsFor: 'evaluating' stamp: 'fbs 10/10/2012 19:19'!
 value: aParser
@@ -25,8 +35,14 @@ initialize
 	cache := Dictionary new.! !
 
 
+!SutureCompacter methodsFor: 'testing' stamp: 'fbs 10/18/2012 16:53'!
+formsACycle: aDelegateParser
+	"If aDelegateParser is not yet resolved, treat it as though it forms a cycle."
+	[aDelegateParser parser] on: UnresolvedDelegate do: [^ true].
+	^ aDelegateParser isChildOf: aDelegateParser parser.! !
 
-!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/12/2012 18:45'!
+
+!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/18/2012 09:53'!
 compact: aParser
 	"Pre-order mark the parser as visited; post-order compact the parser (so that all its subparsers (except in a cycle) have been compacted)."
 	cache at: aParser ifPresent: [:p | ^ p].
@@ -34,41 +50,50 @@ compact: aParser
 	aParser subParsers do: [:p | self compact: p].
 	(cache at: aParser) reference: (aParser class
 		caseOf: {
+			"Optimise case testing by putting the most common cases first"
+			[Empty] -> [aParser].
+			[EmptyString] -> [aParser].
+			[EpsStar] -> [aParser].
+			[Literal] -> [aParser].
 			[Cat] -> [self compactCat: aParser].
+			[Union] -> [self compactUnion: aParser].
+			[Red] -> [self compactRed: aParser].
 			[DelayedParser] -> [self compactDelayed: aParser].
-			[DelegateParser] -> [self compactDelegate: aParser].
-			[Red] -> [self compactRed: aParser]}
+			[DelegateParser] -> [self compactDelegate: aParser]}
 		otherwise: [aParser]).! !
 
-!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/11/2012 19:26'!
+!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/19/2012 09:26'!
 compactCat: aCat
 	| c1 c2 |
-	c1 := cache at: aCat first.
-	c2 := cache at: aCat second.
+	c1 := self cached: aCat first.
+	c2 := self cached: aCat second.
 	c1 whenNullable: [:singleToken |
 		^ c2 reduce: [:w2 | singleToken asOrderedCollection , w2]].
 	c2 whenNullable: [:singleToken |
 		^ c1 reduce: [:w1 | w1 asOrderedCollection , singleToken]].
+	"If a Suture's reference isNil then it's a reference to a parent node (and is part of a cycle)."
+	(c1 reference notNil and: [c1 reference isEmpty]) ifTrue: [^ DerivingParser empty].
+	(c2 reference notNil and: [c2 reference isEmpty]) ifTrue: [^ DerivingParser empty].
 	^ ((c1 reference == aCat first) and: [c2 reference == aCat second])
 		ifTrue: [aCat]
 		ifFalse: [c1 then: c2]! !
 
-!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/12/2012 18:50'!
+!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/18/2012 09:50'!
 compactDelayed: aDelayedParser
 	| c |
-	c := cache at: aDelayedParser force.
+	c := self cached: aDelayedParser force.
 	c reference == aDelayedParser force
 		ifTrue: [^ aDelayedParser].
 		
 	^ c delay.! !
 
-!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/11/2012 09:47'!
+!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/18/2012 09:50'!
 compactDelegate: aDelegateParser
 	"The compaction of a delegate parser is the compaction of its subparser. A delegate parser might not be resolvable yet, because if the delegate closes a cycle, the parser to which it should point will not have been mapped yet."
 	| mappedSubparser |
 	"This delegate completes a cycle. Its subparser hasn't been mapped yet. Mark its presence, and bail. The post-walk will resolve things."
 	(cache contains: [:s | s reference = aDelegateParser parser]) ifFalse: [^ DelegateParser new].
-	mappedSubparser := cache at: aDelegateParser parser.
+	mappedSubparser := self cached: aDelegateParser parser.
 	(aDelegateParser parser == mappedSubparser reference)
 		ifTrue: [^ aDelegateParser].
 	(cache includesKey: aDelegateParser) ifTrue: [
@@ -76,54 +101,12 @@ compactDelegate: aDelegateParser
 	
 	^ DelegateParser new.! !
 
-!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/11/2012 09:20'!
+!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/18/2012 09:51'!
 compactRed: aRed
 	| sub |
-	sub := (cache at: aRed parser) reference.
+	sub := (self cached: aRed parser) reference.
 	(sub = aRed parser)
 		ifTrue: [^ aRed "Already compact"].
-	^ sub reduce: aRed reducer.! !
-
-!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/10/2012 19:28'!
-resolveDelegates: aParser
-	PreOrderParserWalker
-		walk: aParser
-		doing: [:suture | | p |
-			p := suture reference.
-			(p isDelegate and: [p isResolved not])
-				ifTrue: [| preimage |
-					preimage := cache keyAtValue: (cache values detect: [:sutr | sutr reference = p]).
-					p parser: (cache at: preimage parser)]].! !
-
-!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/10/2012 19:11'!
-tieSutures: aParser
-	| sutures references |
-	sutures := cache values.
-	references := sutures collect: #reference.
-	"Put the pointed-to objects in the cache rather than the sutures."
-	sutures do: [:s | cache at: s put: s reference].
-	"Magically make everything that points to a Suture point to the Suture's reference, tying the cyclic knots."
-	sutures elementsForwardIdentityTo: references.! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-SutureCompacter class
-	instanceVariableNames: ''!
-
-!SutureCompacter class methodsFor: 'instance creation' stamp: 'fbs 10/3/2012 09:17'!
-value: aParser
-	^ self new value: aParser.! !
- sub |
-	sub := self cached: aRed parser.
-	ref := sub reference.
-	"Red -> Red => RedRed"
-	(ref isRed)
-		ifTrue: [^ ref reduce: aRed reducer].
-	"Red -> Delegate -> Red => RedRed"
-	(ref isDelegate and: [ref isResolved] and: [ref parser isRed])
-		ifTrue: [^ ref parser reduce: aRed reducer].
-	"Already compact?"
-	(ref = aRed parser) ifTrue: [^ aRed].
 	^ sub reduce: aRed reducer.! !
 
 !SutureCompacter methodsFor: 'private' stamp: 'fbs 10/19/2012 09:29'!
@@ -160,6 +143,14 @@ tieSutures: aParser
 	sutures elementsForwardIdentityTo: references.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+SutureCompacter class
+	instanceVariableNames: ''!
+
+!SutureCompacter class methodsFor: 'instance creation' stamp: 'fbs 10/3/2012 09:17'!
+value: aParser
+	^ self new value: aParser.! !
+ -- -- -- -- -- -- -- -- -- -- -- "!
 
 SutureCompacter class
 	instanceVariableNames: ''!

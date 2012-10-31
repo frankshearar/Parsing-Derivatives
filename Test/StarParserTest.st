@@ -20,21 +20,18 @@ sampleParser
 	^ $a asParser star.! !
 
 
-
-
-
-!StarParserTest methodsFor: 'testing - parsing' stamp: 'fbs 10/10/2012 18:58'!
+!StarParserTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 16:58'!
 testDerivativeOfStarParserPeelsOffOneCopyOfSubParser
 	| p d |
 	p := $a asParser star.
-	d := p d: $a.
+	d := DerivingParser deriverBlock value: $a value: p.
 	self assert: d isCat.
 	self assert: d first isEpsStar.
 	self assert: p equals: d second.! !
-	self assert: p equals: d second.! !
 
 
-!StarParserTest methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:45'!
+
+StarParserTest methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:45'!
 testPrintAsDigraphPrintsSubparsers
 	| r digraph |
 	r := $1 asParser.

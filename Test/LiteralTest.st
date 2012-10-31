@@ -14,16 +14,16 @@ sampleParser
 	^ $a asParser.! !
 
 
-!LiteralTest methodsFor: 'testing - deriving' stamp: 'fbs 8/30/2012 16:00'!
+!LiteralTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 16:59'!
 testDerivativeOfLiteralWrtAnotherObjectIsEmpty
 	| d |
-	d := $a asParser d: $b.
+	d := DerivingParser deriverBlock value: $b value: $a asParser.
 	self assert: d isEmpty.! !
 
-!LiteralTest methodsFor: 'testing - deriving' stamp: 'fbs 9/4/2012 09:18'!
+!LiteralTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 16:59'!
 testDerivativeOfLiteralWrtSelfIsEps
 	| d |
-	d := $a asParser d: $a.
+	d := DerivingParser deriverBlock value: $a value: $a asParser.
 	self assert: d isEpsStar.
 	self assert: {$a} asSet equals: d treeSet.! !
 
@@ -37,9 +37,6 @@ testParseNullIsEmptySet
 
 !LiteralTest methodsFor: 'testing - accessing' stamp: 'fbs 9/5/2012 19:32'!
 testSubParsersReturnsEmptySet
-	self assert: {} equals: $a asParser subParsers.! !
-
-stSubParsersReturnsEmptySet
 	self assert: {} equals: $a asParser subParsers.! !
 
 

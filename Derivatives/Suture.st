@@ -15,6 +15,12 @@ reference
 reference: anObject
 	reference := anObject.! !
 
+!Suture methodsFor: 'accessing' stamp: 'fbs 10/17/2012 09:40'!
+subParsers
+	^ reference
+		ifNil: [#()]
+		ifNotNil: [{reference}].! !
+
 
 !Suture methodsFor: 'initialize-release' stamp: 'fbs 10/1/2012 16:34'!
 pointingAt: anObject
@@ -46,8 +52,5 @@ Suture class
 	instanceVariableNames: ''!
 
 !Suture class methodsFor: 'instance creation' stamp: 'fbs 10/4/2012 09:27'!
-pointingAt: anObject
-	^ self new pointingAt: anObject.! !
-Suture class methodsFor: 'instance creation' stamp: 'fbs 10/4/2012 09:27'!
 pointingAt: anObject
 	^ self new pointingAt: anObject.! !

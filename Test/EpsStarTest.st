@@ -9,20 +9,20 @@ sampleParser
 	^ EpsStar treeSet: {$a}.! !
 
 
-!EpsStarTest methodsFor: 'testing - testing' stamp: 'fbs 9/4/2012 09:04'!
-testIsEpsStar
-	self assert: self sampleParser isEpsStar.! !
-
-!EpsStarTest methodsFor: 'testing - testing' stamp: 'fbs 10/24/2012 21:42'!
-testIsNullable
-	self assert: (DerivingParser isNullableBlock value: self sampleParser).! !
-
-
 !EpsStarTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 17:00'!
 testDerivativeIsEmpty
 	self
 		assert: (DerivingParser deriverBlock value: $a value: (EpsStar treeSet: {})) isEmpty
 		description: 'd(_, eps*) == empty'! !
+
+
+!EpsStarTest methodsFor: 'testing - testing' stamp: 'fbs 9/4/2012 09:04'!
+testIsEpsStar
+	self assert: self sampleParser isEpsStar.! !
+
+!EpsStarTest methodsFor: 'testing - testing' stamp: 'fbs 8/31/2012 08:05'!
+testIsNullable
+	self assert: self sampleParser isNullable.! !
 
 
 !EpsStarTest methodsFor: 'testing - parsing' stamp: 'fbs 10/12/2012 18:53'!
@@ -35,6 +35,7 @@ testParseNullIsTreeSet
 !EpsStarTest methodsFor: 'testing - accessing' stamp: 'fbs 9/5/2012 19:32'!
 testSubParsersReturnsEmptySet
 	self assert: {} equals: (EpsStar treeSet: {1}) subParsers.! !
+ treeSet: {1}) subParsers.! !
 
 
 !EpsStarTest methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:37'!

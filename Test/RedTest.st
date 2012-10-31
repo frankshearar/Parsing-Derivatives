@@ -50,13 +50,13 @@ sampleParser
 	^ (EpsStar treeSet: {1. 2}) reduce: [:x | x + 1].! !
 
 
-!RedTest methodsFor: 'testing - deriving' stamp: 'fbs 10/12/2012 18:53'!
+!RedTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 16:59'!
 testDerivativeIsTheReductionOfTheSubParsersDerivative
 	| d p sub parseNull |
 	parseNull := DerivingParser parseNullBlock.
 	sub := 1 asParser.
 	p := sub reduce: [:x | x + 1].
-	d := p d: 1.
+	d := DerivingParser deriverBlock value: 1 value: p.
 	self assert: d isRed.
 	self assert: {2} asSet equals: (parseNull value: d) description: 'The subparser of the derivative is the derivative of the subparser'.
 	self assert: d reducer == p reducer description: 'The reducer remains the same'.! !
@@ -72,10 +72,10 @@ testCompactOfNestedRedsComposesTheirReducers
 	self assert: c parser isLiteral.
 	self assert: 4 equals: (c reducer value: 1).! !
 
-!RedTest methodsFor: 'testing - parsing' stamp: 'fbs 10/11/2012 19:25'!
+!RedTest methodsFor: 'testing - parsing' stamp: 'fbs 10/16/2012 17:02'!
 testCompactionIsRedOfCompactedSubparser
 	| p c |
-	p := ($a asParser star reduce: [:x | {$b}, x]) d: $a.
+	p := DerivingParser deriverBlock value: $a value: ($a asParser star reduce: [:x | {$b}, x]).
 	c := SutureCompacter value: p.
 	self assert: c isRed.
 	self assert: c parser == (SutureCompacter value: c parser).! !
@@ -90,10 +90,7 @@ testReduceOfaRedComposesReducers
 	self assert: 4 equals: (r reducer value: 1).! !
 
 
-reduce: [:x | x + 1].
-	r := p reduce: [:x | x * 2].
-	self assert: r isRed.
-	self assert: r parser isLiteral.
+lf assert: r parser isLiteral.
 	self assert: 4 equals: (r reducer value: 1).! !
 
 

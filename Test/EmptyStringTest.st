@@ -23,6 +23,12 @@ testIsNullable
 	self assert: self sampleParser isNullable.! !
 
 
+!EmptyStringTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 17:00'!
+testDerivativeIsEmpty
+	self
+		assert: (DerivingParser deriverBlock value: $a value: (DerivingParser emptyString)) isEmpty
+		description: 'd(_, eps*) == empty'! !
+
 
 
 
@@ -32,12 +38,5 @@ testParseNullIsSetWithItself
 	| parseNull |
 	parseNull := DerivingParser parseNullBlock.
 	self assert: {DerivingParser emptyString} asSet equals: (parseNull value: DerivingParser emptyString).! !
-	| p |
-	p := self sampleParser.
-	self assert: (p dotLabel includesSubString: 'eps').! !
-
-
-!EmptyStringTest methodsFor: 'testing - generating' stamp: 'fbs 10/29/2012 12:03'!
-testGenerateProducesOneEmptyString
-	self assert: #(()) equals: (self sampleParser generate read: 1).
+mpleParser generate read: 1).
 	self should: [self sampleParser generate read: 2] raise: Incomplete.! !

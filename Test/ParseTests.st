@@ -8,19 +8,19 @@ TestCase subclass: #ParseTests
 testOrCreatesAUnionParser
 	self assert: ($a asParser or: $b asParser) isUnion.! !
 
-!ParseTests methodsFor: 'testing - parsers' stamp: 'fbs 10/12/2012 10:19'!
+!ParseTests methodsFor: 'testing - parsers' stamp: 'fbs 10/16/2012 17:02'!
 testRightRecursiveGrammar
-	| ones d Dones DDones parseNull |
+	| ones d D Dones DDones parseNull |
+	D := DerivingParser deriverBlock.
 	parseNull := DerivingParser parseNullBlock.
 	d := DelegateParser new.
 	ones := DerivingParser emptyString or: (1 asParser then: d).
 	d parser: ones.
-	Dones := (ones d: 1).
-	DDones := (Dones d: 1).
+	Dones := (D value: 1 value: ones).
+	DDones := (D value: 1 value: Dones).
 	self assert: {{1. DerivingParser emptyString}} asSet equals: (parseNull value: Dones).
 	self assert: {{1. 1. DerivingParser emptyString}} asSet equals: (parseNull value: DDones).! !
 
 !ParseTests methodsFor: 'testing - parsers' stamp: 'fbs 8/30/2012 16:32'!
 testThenCreatesACatParser
 	self assert: ($a asParser then: $b asParser) isCat.! !
-Cat.! !

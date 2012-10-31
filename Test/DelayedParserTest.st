@@ -35,10 +35,10 @@ testDelayingADelayedParserIsaNoOp
 	self assert: p == d.! !
 
 
-
-!DelayedParserTest methodsFor: 'testing - parsing' stamp: 'fbs 8/31/2012 11:59'!
+!DelayedParserTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 17:01'!
 testDerivativeIsDerivativeOfSubparser
-	self assert: ($a asParser delay d: $b) isEmpty.! !
+	self assert: (DerivingParser deriverBlock value: $b value: ($a asParser delay)) isEmpty.! !
+
 
 !DelayedParserTest methodsFor: 'testing - parsing' stamp: 'fbs 8/31/2012 08:07'!
 testIsNullable
@@ -60,10 +60,7 @@ testSubParsersReturnsForced
 	self assert: {p parser} equals: p subParsers.! !
 
 
-
-	| p |
-	p := $a asParser delay.
-	self assert: {p parser} equals: p subParsers.! !
+rt: {p parser} equals: p subParsers.! !
 
 
 !DelayedParserTest methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:35'!

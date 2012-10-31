@@ -44,26 +44,6 @@ testSubParsersReturnsLeftAndRight
 	self assert: {p left. p right} equals: p subParsers.! !
 
 
-!UnionTest methodsFor: 'testing - parsing' stamp: 'fbs 10/11/2012 19:36'!
-testDerivativeIsUnionOfSubparserDerivatives
-	| d |
-	"This strange-looking grammar ensures that the derivative of both subparsers are not isEmpty."
-	d := (($a asParser then: $c asParser) or: ($a asParser then: $b asParser)) d: $a.
-	self assert: d isUnion.
-	"Left subparser is now 'we have read a $a and expect a $c next."
-	self assert: d left isUnion.
-	self assert: d left right isCat.
-	self assert: d left right first isEpsStar.
-	self assert: d left right second isLiteral.
-	self assert: $c equals: d left right second token.
-	
-	"Right subparser is now 'we have read a $a and expect a $b next."
-	self assert: d right isUnion.
-	self assert: d right right isCat.
-	self assert: d right right first isEpsStar.
-	self assert: d right right second isLiteral.
-	self assert: $b equals: d right right second token.! !
-
 !UnionTest methodsFor: 'testing - parsing' stamp: 'fbs 10/12/2012 18:53'!
 testParseNullIsUnionOfSubParsersParseTrees
 	| parseNull |
@@ -74,6 +54,31 @@ testParseNullIsUnionOfSubParsersParseTrees
 testUnionOfCompactedParsersCompactsToItself
 	| u |
 	u := $a asParser or: $b asParser.
+	self assert: u == (Compacter value: u).! !
+
+
+!UnionTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 17:05'!
+testDerivativeIsUnionOfSubparserDerivatives
+	| d |
+	"This strange-looking grammar ensures that the derivative of both subparsers are not isEmpty."
+	d := DerivingParser deriverBlock
+		value: $a
+		value: (($a asParser then: $c asParser) or: ($a asParser then: $b asParser)).
+	self assert: d isUnion.
+	"Left subparser is now 'we have read a $a and expect a $c next."
+	self assert: d left isCat.
+	self assert: d left first isEpsStar.
+	self assert: d left second isLiteral.
+	self assert: $c equals: d left second token.
+	
+	"Right subparser is now 'we have read a $a and expect a $b next."
+	self assert: d right isCat.
+	self assert: d right first isEpsStar.
+	self assert: d right second isLiteral.
+	self assert: $b equals: d right second token.! !
+
+
+ or: $b asParser.
 	self assert: u == (Compacter value: u).! !
 
 

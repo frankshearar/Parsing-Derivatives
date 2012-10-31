@@ -70,25 +70,20 @@ testDerivativeFirstParserNullable
 	self assert: d right first isEmpty.
 	self assert: r equals: d right second.! !
 
-!CatTest methodsFor: 'testing - deriving' stamp: 'fbs 10/12/2012 10:14'!
+!CatTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 17:08'!
 testDerivativeFollowsLeibniz
 	"(ab)' = a'b + ab'."
 	| p d |
 	p := 1 asParser then: 2 asParser.
-	d := p d: 1.
-	self assert: d isUnion.
-	self assert: d left isCat.
-	self assert: d left first isEpsStar.
-	self assert: Set new equals: d left first treeSet.
-	self assert: d left second isEmpty.
-	self assert: d right isCat.
-	self assert: d right first isEpsStar.
-	self assert: #(1) asSet equals: d right first treeSet.
-	self assert: d right second isLiteral.
-	self assert: 2 equals: d right second token.! !
+	d := DerivingParser deriverBlock value: 1 value: p.
+	self assert: d isCat.
+	self assert: d first isEpsStar.
+	self assert: #(1) asSet equals: d first treeSet.
+	self assert: d second isLiteral.
+	self assert: 2 equals: d second token.! !
 
 
-!CatTest methodsFor: 'testing - parsing' stamp: 'fbs 10/9/2012 19:07'!
+!CatTest methodsFor: 'testing - parsing' stamp: 'fbs 10/18/2012 21:47'!
 testCompactionCompactsSubparsers
 	| c p l r |
 	l := $a asParser.
@@ -96,10 +91,8 @@ testCompactionCompactsSubparsers
 	p := (DelegateParser new parser: l) then: (DelegateParser new parser: r).
 	c := SutureCompacter value: p.
 	self assert: c isCat.
-	self assert: c first isDelegate.
-	self assert: l equals: c first parser.
-	self assert: c second isDelegate.
-	self assert: r equals: c second parser.! !
+	self assert: l equals: c first.
+	self assert: r equals: c second.! !
 
 !CatTest methodsFor: 'testing - parsing' stamp: 'fbs 9/10/2012 21:15'!
 testCompactionOfCompactParsersIsItself
@@ -113,6 +106,16 @@ testCompactionWithSingleElementFirstParseTreeIsRed
 	p := (EpsStar treeSet: {$a}) then: $b asParser.
 	c := Compacter value: p.
 	self assert: c isRed.! !
+
+!CatTest methodsFor: 'testing - parsing' stamp: 'fbs 9/10/2012 21:18'!
+testCompactionWithSingleElementSecondParseTreeIsRed
+	| c p |
+	p := $a asParser then: (EpsStar treeSet: {$b}).
+	c := Compacter value: p.
+	self assert: c isRed.! !
+
+
+ert: c isRed.! !
 
 !CatTest methodsFor: 'testing - parsing' stamp: 'fbs 9/10/2012 21:18'!
 testCompactionWithSingleElementSecondParseTreeIsRed

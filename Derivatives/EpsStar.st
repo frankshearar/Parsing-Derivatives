@@ -28,9 +28,9 @@ treeSet
 	^ treeSet! !
 
 
-!EpsStar methodsFor: 'printing' stamp: 'fbs 9/14/2012 21:12'!
+!EpsStar methodsFor: 'printing' stamp: 'fbs 10/19/2012 09:33'!
 printAsDotNode: parserIntegerMap
-	^ ('{1} [label="eps* ({2} ({3})"]' format: {
+	^ ('{1} [label="eps* ({2}) ({3})"]' format: {
 		(parserIntegerMap at: self) printString.
 		self treeSet printString.
 		(parserIntegerMap at: self) printString}),
@@ -45,7 +45,7 @@ EpsStar class
 !EpsStar class methodsFor: 'instance creation' stamp: 'fbs 8/30/2012 15:58'!
 treeSet: aCollection
 	^ self new treeSet: aCollection asSet.! !
-truct and should never appear in an initial grammar."
+uct and should never appear in an initial grammar."
 	^ #() reading.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
