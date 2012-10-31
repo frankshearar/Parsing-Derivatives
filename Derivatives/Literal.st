@@ -30,14 +30,15 @@ printAsDotNode: parserIntegerMap
 	Character cr.! !
 
 
+!Literal methodsFor: 'generating' stamp: 'fbs 10/26/2012 18:54'!
+generate
+	^ {token} reading.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 Literal class
 	instanceVariableNames: ''!
 
 !Literal class methodsFor: 'instance creation' stamp: 'fbs 8/30/2012 15:55'!
-token: anObject
-	^ self new token: anObject! !
- 'instance creation' stamp: 'fbs 8/30/2012 15:55'!
 token: anObject
 	^ self new token: anObject! !

@@ -38,15 +38,12 @@ printAsDotNode: parserIntegerMap
 	}.! !
 
 
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-StarParser class
-	instanceVariableNames: ''!
-
-!StarParser class methodsFor: 'instance creation' stamp: 'fbs 9/13/2012 19:36'!
-repeating: aParser
-	^ self new parser: aParser.! !
-ingParser emptyString generate ,
+!StarParser methodsFor: 'generating' stamp: 'fbs 10/29/2012 12:21'!
+generate
+	"Generate ever-increasing parse trees from the underlying parser p: first 'no occurrences of p', then p, then pp, and so on."
+	| count |
+	count := 1.
+	^ DerivingParser emptyString generate ,
 		[ | s |
 		s := ((1 to: count) collect: [:ignore | parser generate]) reading stitching.
 		count := count + 1.

@@ -46,15 +46,11 @@ printAsDotNode: parserIntegerMap
 		(parserIntegerMap at: self second) printString.}! !
 
 
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-Cat class
-	instanceVariableNames: ''!
-
-!Cat class methodsFor: 'instance creation' stamp: 'fbs 8/30/2012 16:35'!
-with: firstParser with: secondParser
-	^ self new first: firstParser second: secondParser.! !
- tail}]]) stitching.! !
+!Cat methodsFor: 'generating' stamp: 'fbs 10/31/2012 08:09'!
+generate
+	"Generate the Cartesian product of the two subparsers' output."
+	^ ((DelayedStream on: [first generate]) collecting: [:head |
+		(DelayedStream on: [second generate]) collecting: [:tail | {head. tail}]]) stitching.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 

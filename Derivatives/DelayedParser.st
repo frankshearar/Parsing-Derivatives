@@ -52,14 +52,15 @@ printAsDotNode: parserIntegerMap
 	}.! !
 
 
+!DelayedParser methodsFor: 'generating' stamp: 'fbs 10/25/2012 18:56'!
+generate
+	^ self force generate.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 DelayedParser class
 	instanceVariableNames: ''!
 
 !DelayedParser class methodsFor: 'instance creation' stamp: 'fbs 8/30/2012 21:14'!
-on: aBlock
-	^ self new block: aBlock! !
-class methodsFor: 'instance creation' stamp: 'fbs 8/30/2012 21:14'!
 on: aBlock
 	^ self new block: aBlock! !

@@ -37,8 +37,8 @@ testDotLabelDescribesParser
 	self assert: (p dotLabel includesSubString: 'eps').! !
 
 
-|
-	parseNull := DerivingParser parseNullBlock.
-	self assert: {DerivingParser emptyString} asSet equals: (parseNull value: DerivingParser emptyString).! !
-mpleParser generate read: 1).
+!EmptyStringTest methodsFor: 'testing - generating' stamp: 'fbs 10/29/2012 12:03'!
+testGenerateProducesOneEmptyString
+	self assert: #(()) equals: (self sampleParser generate read: 1).
 	self should: [self sampleParser generate read: 2] raise: Incomplete.! !
+

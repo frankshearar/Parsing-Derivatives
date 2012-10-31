@@ -13,15 +13,15 @@ A DelayedStream is an otherwise normal XTReadStream except that it reads off a s
 	self assert: hasRun.!
 
 
+!DelayedStream methodsFor: 'initialize-release' stamp: 'fbs 10/30/2012 13:37'!
+contentsSpecies
+	^ self force contentsSpecies.! !
+
+
 !DelayedStream methodsFor: 'private' stamp: 'fbs 10/31/2012 08:49'!
 force
 	source isBlock ifTrue: [source := source value reading].
 	^ source.! !
-
-
-!DelayedStream methodsFor: 'initialize-release' stamp: 'fbs 10/30/2012 13:37'!
-contentsSpecies
-	^ self force contentsSpecies.! !
 
 
 !DelayedStream methodsFor: 'accessing' stamp: 'fbs 10/30/2012 13:37'!

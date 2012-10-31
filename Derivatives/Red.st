@@ -52,14 +52,15 @@ printAsDotNode: parserIntegerMap
 	}.! !
 
 
+!Red methodsFor: 'generating' stamp: 'fbs 10/25/2012 18:50'!
+generate
+	^ parser generate collecting: reducer.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 Red class
 	instanceVariableNames: ''!
 
 !Red class methodsFor: 'instance creation' stamp: 'fbs 8/30/2012 16:45'!
-parser: aParser reduceWith: aUnaryBlock
-	^ self new parser: aParser reduceWith: aUnaryBlock.! !
-8/30/2012 16:45'!
 parser: aParser reduceWith: aUnaryBlock
 	^ self new parser: aParser reduceWith: aUnaryBlock.! !

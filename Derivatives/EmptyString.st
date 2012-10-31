@@ -29,7 +29,7 @@ asCollection
 	^ #().! !
 
 
-empty collection."! !
-r: 'generating' stamp: 'fbs 10/29/2012 12:03'!
+!EmptyString methodsFor: 'generating' stamp: 'fbs 10/29/2012 12:03'!
 generate
 	^ #(()) reading! !
+

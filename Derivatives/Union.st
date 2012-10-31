@@ -46,15 +46,15 @@ printAsDotNode: parserIntegerMap
 		(parserIntegerMap at: self right) printString.}! !
 
 
+!Union methodsFor: 'generating' stamp: 'fbs 10/31/2012 14:54'!
+generate
+	^ (DelayedStream on: [left generate])
+		interleave: (DelayedStream on: [right generate]).! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 Union class
 	instanceVariableNames: ''!
-
-!Union class methodsFor: 'instance creation' stamp: 'fbs 8/30/2012 16:50'!
-left: lParser right: rParser
-	^ self new left: lParser right: rParser.! !
-riableNames: ''!
 
 !Union class methodsFor: 'instance creation' stamp: 'fbs 8/30/2012 16:50'!
 left: lParser right: rParser

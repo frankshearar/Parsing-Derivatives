@@ -160,6 +160,11 @@ inspectorClass
 	^ ParserInspector! !
 
 
+!DerivingParser methodsFor: 'generating' stamp: 'fbs 10/25/2012 18:42'!
+generate
+	"Many parsers don't parse anything."
+	^ #() reading.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 DerivingParser class
@@ -208,6 +213,31 @@ flushCaches
 	EmptyBlock := self isEmptyBlock.
 	NullableBlock := self isNullableBlock.
 	ParseNullBlock := self parseNullBlock.! !
+
+!DerivingParser class methodsFor: 'private' stamp: 'fbs 10/31/2012 08:51'!
+generateBlock
+	| cache gn |
+	gn := nil.
+	cache := Dictionary new.
+	gn := [:p |
+		cache at: p ifAbsentPut: [
+		p class caseOf: {
+			[Empty] -> [#() reading].
+			[EmptyString] -> [#(()) reading].
+			[EpsStar] -> [#() reading].
+			[Literal] -> [{p token} reading].
+			[StarParser] -> [p generate].
+			[Union] -> [(DelayedStream on: [gn value: p right])
+				interleave: (DelayedStream on: [gn value: p left])].
+			[Cat] -> [((DelayedStream on: [gn value: p first]) collecting: [:head |
+				(DelayedStream on: [gn value: p second]) collecting: [:tail | {head. tail}]]) stitching].
+			[Red] -> [(gn value: p parser) collecting: p reducer].
+			[DelayedParser] -> [gn value: p force].
+			[DelegateParser] -> [gn value: p parser].
+			[Suture] -> [gn value: p reference "It actually makes little sense to generate from a  Suture, but ..."]
+		}
+		otherwise: [Error signal: 'generate not defined for ', p className]]] lfpWithBottom: #() reading.
+	^ gn.! !
 
 !DerivingParser class methodsFor: 'private' stamp: 'fbs 10/1/2012 16:40'!
 isEmptyBlock
@@ -280,12 +310,6 @@ initialize
 	EmptyStringParser := EmptyString new.
 	DeriverBlock := self deriverBlock.
 	EmptyBlock := self isEmptyBlock.
-	NullableBlock := self isNullableBlock.
-	ParseNullBlock := self parseNullBlock.! !
-
-
-DerivingParser initialize!
-lock := self isEmptyBlock.
 	NullableBlock := self isNullableBlock.
 	ParseNullBlock := self parseNullBlock.! !
 

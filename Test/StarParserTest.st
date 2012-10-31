@@ -44,3 +44,4 @@ testGenerateReturnsEverLongerParses
 	self
 		assert: #(() ($a) ($a $a) ($a $a $a) ($a $a $a $a))
 		equals: ($a asParser star generate read: 5)! !
+

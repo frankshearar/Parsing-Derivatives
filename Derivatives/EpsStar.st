@@ -42,15 +42,12 @@ printAsDotNode: parserIntegerMap
 	Character cr.! !
 
 
+!EpsStar methodsFor: 'generating' stamp: 'fbs 10/29/2012 12:05'!
+generate
+	"An eps* node represents a partial parse: it's an internal construct and should never appear in an initial grammar."
+	^ #() reading.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-EpsStar class
-	instanceVariableNames: ''!
-
-!EpsStar class methodsFor: 'instance creation' stamp: 'fbs 8/30/2012 15:58'!
-treeSet: aCollection
-	^ self new treeSet: aCollection asSet.! !
--- -- -- -- -- -- -- -- "!
 
 EpsStar class
 	instanceVariableNames: ''!
