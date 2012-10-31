@@ -214,31 +214,6 @@ flushCaches
 	NullableBlock := self isNullableBlock.
 	ParseNullBlock := self parseNullBlock.! !
 
-!DerivingParser class methodsFor: 'private' stamp: 'fbs 10/31/2012 08:51'!
-generateBlock
-	| cache gn |
-	gn := nil.
-	cache := Dictionary new.
-	gn := [:p |
-		cache at: p ifAbsentPut: [
-		p class caseOf: {
-			[Empty] -> [#() reading].
-			[EmptyString] -> [#(()) reading].
-			[EpsStar] -> [#() reading].
-			[Literal] -> [{p token} reading].
-			[StarParser] -> [p generate].
-			[Union] -> [(DelayedStream on: [gn value: p right])
-				interleave: (DelayedStream on: [gn value: p left])].
-			[Cat] -> [((DelayedStream on: [gn value: p first]) collecting: [:head |
-				(DelayedStream on: [gn value: p second]) collecting: [:tail | {head. tail}]]) stitching].
-			[Red] -> [(gn value: p parser) collecting: p reducer].
-			[DelayedParser] -> [gn value: p force].
-			[DelegateParser] -> [gn value: p parser].
-			[Suture] -> [gn value: p reference "It actually makes little sense to generate from a  Suture, but ..."]
-		}
-		otherwise: [Error signal: 'generate not defined for ', p className]]] lfpWithBottom: #() reading.
-	^ gn.! !
-
 !DerivingParser class methodsFor: 'private' stamp: 'fbs 10/1/2012 16:40'!
 isEmptyBlock
 	| e |
@@ -287,6 +262,35 @@ parseNullBlock
 		p class caseOf: {
 			[Empty] -> [Set new].
 			[EmptyString] -> [Set newFrom: {#()}].
+			[EpsStar] -> [p treeSet].
+			[Literal] -> [Set new].
+			[Union] -> [(pn value: p left) union: (pn value: p right)].
+			[Cat] -> [ | concat |
+				concat := [:t1 :t2 | t1 asArray , t2 asArray].
+				(pn value: p first)
+					cartesianProduct: concat
+					with: (pn value: p second)].
+			[Red] -> [(pn value: p parser) collect: p reducer].
+			[StarParser] -> [Set newFrom: #(#())].
+			[DelayedParser] -> [pn value: p force].
+			[DelegateParser] -> [p isResolved ifFalse: [UnresolvedDelegate accessing: p]. pn value: p parser].
+			[Suture] -> [Set new]}
+		otherwise: [Error signal: 'parseNull not defined for ', p className]] lfpWithBottom: Set new.
+	^ pn.! !
+
+
+!DerivingParser class methodsFor: 'class initialization' stamp: 'fbs 9/28/2012 09:50'!
+initialize
+	EmptyParser := Empty new.
+	EmptyStringParser := EmptyString new.
+	DeriverBlock := self deriverBlock.
+	EmptyBlock := self isEmptyBlock.
+	NullableBlock := self isNullableBlock.
+	ParseNullBlock := self parseNullBlock.! !
+
+
+DerivingParser initialize!
+wFrom: {#()}].
 			[EpsStar] -> [p treeSet].
 			[Literal] -> [Set new].
 			[Union] -> [(pn value: p left) union: (pn value: p right)].
