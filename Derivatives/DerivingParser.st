@@ -3,10 +3,12 @@ Object subclass: #DerivingParser
 	classVariableNames: 'DeriverBlock EmptyBlock EmptyParser EmptyStringParser NullableBlock ParseNullBlock'
 	poolDictionaries: ''
 	category: 'Parsing-Derivatives'!
-!DerivingParser commentStamp: 'fbs 9/4/2012 08:49' prior: 0!
+!DerivingParser commentStamp: 'fbs 10/16/2012 09:35' prior: 0!
 My subclasses implement parsers that represent the _derivative_ of a context free language. Each time you "derive" a new parser with respect to a character you get a parser that
 * builds a partial parse tree of the input thus far (the sequence of characters used to derive the current parser), and
 * is a parser for the remaining input.
+
+As a result, my subclasses represent non-blocking parsers: they may consume partial input (say from a socket), storing partial parses until such time as the input is drained.
 
 To put it another way, derivation calculates the parser's continuation.!
 
@@ -276,9 +278,7 @@ initialize
 
 
 DerivingParser initialize!
-> [p isResolved ifFalse: [UnresolvedDelegate accessing: p]. pn value: p parser].
-			[Suture] -> [Set new]}
-		otherwise: [Error signal: 'parseNull not defined for ', p className]] lfpWithBottom: Set new.
+ lfpWithBottom: Set new.
 	^ pn.! !
 
 
