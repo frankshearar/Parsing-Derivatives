@@ -62,19 +62,21 @@ compact: aParser
 			[DelegateParser] -> [self compactDelegate: aParser]}
 		otherwise: [aParser]).! !
 
-!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/19/2012 09:26'!
+!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/19/2012 20:52'!
 compactCat: aCat
-	| c1 c2 |
+	| c1 c2 ref1 ref2 |
 	c1 := self cached: aCat first.
+	ref1 := c1 reference.
 	c2 := self cached: aCat second.
-	c1 whenNullable: [:singleToken |
+	ref2 := c2 reference.
+	ref1 whenNullable: [:singleToken |
 		^ c2 reduce: [:w2 | singleToken asOrderedCollection , w2]].
-	c2 whenNullable: [:singleToken |
+	ref2 whenNullable: [:singleToken |
 		^ c1 reduce: [:w1 | w1 asOrderedCollection , singleToken]].
 	"If a Suture's reference isNil then it's a reference to a parent node (and is part of a cycle)."
-	(c1 reference notNil and: [c1 reference isEmpty]) ifTrue: [^ DerivingParser empty].
-	(c2 reference notNil and: [c2 reference isEmpty]) ifTrue: [^ DerivingParser empty].
-	^ ((c1 reference == aCat first) and: [c2 reference == aCat second])
+	(ref1 notNil and: [ref1 isEmpty]) ifTrue: [^ DerivingParser empty].
+	(ref2 notNil and: [ref2 isEmpty]) ifTrue: [^ DerivingParser empty].
+	^ ((ref1 == aCat first) and: [ref2 == aCat second])
 		ifTrue: [aCat]
 		ifFalse: [c1 then: c2]! !
 
@@ -150,7 +152,7 @@ SutureCompacter class
 !SutureCompacter class methodsFor: 'instance creation' stamp: 'fbs 10/3/2012 09:17'!
 value: aParser
 	^ self new value: aParser.! !
- -- -- -- -- -- -- -- -- -- -- -- "!
+ -- -- -- -- -- -- -- "!
 
 SutureCompacter class
 	instanceVariableNames: ''!

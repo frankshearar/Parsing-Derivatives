@@ -62,12 +62,12 @@ testDerivativeIsTheReductionOfTheSubParsersDerivative
 	self assert: d reducer == p reducer description: 'The reducer remains the same'.! !
 
 
-!RedTest methodsFor: 'testing - parsing' stamp: 'fbs 9/17/2012 18:56'!
+!RedTest methodsFor: 'testing - parsing' stamp: 'fbs 10/19/2012 11:16'!
 testCompactOfNestedRedsComposesTheirReducers
 	| c p1 p2 |
 	p1 := 1 asParser reduce: [:i | i + 1].
 	p2 := p1 reduce: [:j | j * 2].
-	c := Compacter value: p2.
+	c := SutureCompacter value: p2.
 	self assert: c isRed.
 	self assert: c parser isLiteral.
 	self assert: 4 equals: (c reducer value: 1).! !
@@ -90,7 +90,7 @@ testReduceOfaRedComposesReducers
 	self assert: 4 equals: (r reducer value: 1).! !
 
 
-lf assert: r parser isLiteral.
+rt: r parser isLiteral.
 	self assert: 4 equals: (r reducer value: 1).! !
 
 

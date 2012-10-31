@@ -50,11 +50,11 @@ testParseNullIsUnionOfSubParsersParseTrees
 	parseNull := DerivingParser parseNullBlock.
 	self assert: {1. 2} asSet equals: (parseNull value: ((EpsStar treeSet: {1}) or: (EpsStar treeSet: {2}))).! !
 
-!UnionTest methodsFor: 'testing - parsing' stamp: 'fbs 9/12/2012 09:12'!
+!UnionTest methodsFor: 'testing - parsing' stamp: 'fbs 10/19/2012 11:16'!
 testUnionOfCompactedParsersCompactsToItself
 	| u |
 	u := $a asParser or: $b asParser.
-	self assert: u == (Compacter value: u).! !
+	self assert: u == (SutureCompacter value: u).! !
 
 
 !UnionTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 17:05'!
@@ -78,7 +78,7 @@ testDerivativeIsUnionOfSubparserDerivatives
 	self assert: $b equals: d right second token.! !
 
 
- or: $b asParser.
+ asParser.
 	self assert: u == (Compacter value: u).! !
 
 
