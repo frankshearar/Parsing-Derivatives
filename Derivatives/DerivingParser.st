@@ -105,7 +105,7 @@ parseNull
 	"Can I parse the empty string?"
 	^ ParseNullBlock value: self.! !
 
-!DerivingParser methodsFor: 'parsing' stamp: 'fbs 8/30/2012 16:42'!
+!DerivingParser methodsFor: 'parsing' stamp: 'fbs 10/25/2012 09:22'!
 reduce: aUnaryBlock
 	^ Red parser: self reduceWith: aUnaryBlock! !
 
@@ -202,6 +202,13 @@ deriverBlock
 		otherwise: [Error signal: 'derivative not defined for ', p className]] memoized.
 	^ d! !
 
+!DerivingParser class methodsFor: 'private' stamp: 'fbs 10/25/2012 09:38'!
+flushCaches
+	DeriverBlock := self deriverBlock.
+	EmptyBlock := self isEmptyBlock.
+	NullableBlock := self isNullableBlock.
+	ParseNullBlock := self parseNullBlock.! !
+
 !DerivingParser class methodsFor: 'private' stamp: 'fbs 10/1/2012 16:40'!
 isEmptyBlock
 	| e |
@@ -242,14 +249,14 @@ isNullableBlock
 		otherwise: [Error signal: 'isNullable not defined for ', p className]] lfpWithBottom: false.
 	^ n.! !
 
-!DerivingParser class methodsFor: 'private' stamp: 'fbs 10/12/2012 10:18'!
+!DerivingParser class methodsFor: 'private' stamp: 'fbs 10/19/2012 21:14'!
 parseNullBlock
 	| pn |
 	pn := nil.
 	pn := [:p |
 		p class caseOf: {
 			[Empty] -> [Set new].
-			[EmptyString] -> [Set newFrom: {p}].
+			[EmptyString] -> [Set newFrom: {#()}].
 			[EpsStar] -> [p treeSet].
 			[Literal] -> [Set new].
 			[Union] -> [(pn value: p left) union: (pn value: p right)].
@@ -278,16 +285,7 @@ initialize
 
 
 DerivingParser initialize!
- lfpWithBottom: Set new.
-	^ pn.! !
-
-
-!DerivingParser class methodsFor: 'class initialization' stamp: 'fbs 9/28/2012 09:50'!
-initialize
-	EmptyParser := Empty new.
-	EmptyStringParser := EmptyString new.
-	DeriverBlock := self deriverBlock.
-	EmptyBlock := self isEmptyBlock.
+lock := self isEmptyBlock.
 	NullableBlock := self isNullableBlock.
 	ParseNullBlock := self parseNullBlock.! !
 

@@ -17,7 +17,7 @@ testCanCompactCatWithCyclicSubparser
 	
 	self assert: c isDelegate."! !
 
-!SutureCompacterTest methodsFor: 'testing' stamp: 'fbs 10/18/2012 21:41'!
+!SutureCompacterTest methodsFor: 'testing' stamp: 'fbs 10/23/2012 18:54'!
 testCanCompactDelegateContainingCyclicParsers
 	| ones c d D Dones DDones parseNull |
 	D := DerivingParser deriverBlock.
@@ -28,8 +28,26 @@ testCanCompactDelegateContainingCyclicParsers
 	Dones := (D value: 1 value: ones).
 	DDones := (D value: 1 value: Dones).
 	c := SutureCompacter value: DDones.
-	self assert: c isCat.
-	self assert: {{1. 1. DerivingParser emptyString}} asSet equals: c parseNull.! !
+	self assert: c isRed.
+	self assert: #((1 1)) asSet equals: c parseNull.! !
+
+!SutureCompacterTest methodsFor: 'testing' stamp: 'fbs 10/23/2012 18:43'!
+testCanCompactNestedReds
+	| c p |
+	p := ((EpsStar treeSet: {2}) reduce: [:x | x + 1]) reduce: [:y | y * 2].
+	c := SutureCompacter value: p.
+	self assert: c isRed.
+	self assert: c parser isEpsStar.
+	self assert: #(6) asSet equals: c parseNull.! !
+
+!SutureCompacterTest methodsFor: 'testing' stamp: 'fbs 10/23/2012 18:44'!
+testCanCompactRedDelegateRed
+	| c p |
+	p := ((DelegateParser new parser: ((EpsStar treeSet: {1}) reduce: [:x | x + 2])) reduce: [:x | x + 1]).
+	c := SutureCompacter value: p.
+	self assert: c isRed.
+	self assert: c parser isEpsStar.
+	self assert: #(4) asSet equals: c parseNull.! !
 
 !SutureCompacterTest methodsFor: 'testing' stamp: 'fbs 10/17/2012 21:19'!
 testCanCompactUnionDeeply
@@ -55,7 +73,7 @@ testCanCompactUnionWithCyclicSubparser
 	self assert: c isLiteral.
 	self assert: 2 equals: c token."! !
 
-!SutureCompacterTest methodsFor: 'testing' stamp: 'fbs 10/18/2012 09:20'!
+!SutureCompacterTest methodsFor: 'testing' stamp: 'fbs 10/25/2012 09:22'!
 testCompactionDiscardsEmptyUnionSubparsers
 	| c p |
 	p := Union
@@ -68,9 +86,10 @@ testCompactionDiscardsEmptyUnionSubparsers
 			with: DerivingParser empty delay
 			with: DerivingParser emptyString delay) delay.
 	c := SutureCompacter value: p.
-	self assert: c isCat.
-	self assert: c first isEpsStar.
-	self assert: #(1) asSet equals: c first treeSet! !
+	"Because of the EpsStar, the Cat is reduced to a Red nesting the Cat's right subparser."
+	self assert: c isRed.
+	self assert: c parser isEps.
+	self assert: #((1 2)) asSet equals: (DerivingParser parseNullBlock value: c).! !
 
 !SutureCompacterTest methodsFor: 'testing' stamp: 'fbs 10/17/2012 20:56'!
 testCompactionOfAnythingOrEmptyIsAnything
@@ -95,25 +114,6 @@ testCompactionOfEmptyThenAnythingIsEmpty
 !SutureCompacterTest methodsFor: 'testing' stamp: 'fbs 10/18/2012 09:39'!
 testCompactionRemovesUnnecessaryDelegates
 	"If a delegate doesn't form part of a cycle, it does no harm to point to the delegate's reference instead of the delegate. This also makes the parser one node smaller, potentially."
-	| c p |
-	p := $a asParser then: (DelegateParser new parser: $b asParser).
-	c := SutureCompacter value: p.
-	self assert: c isCat.
-	self assert: c second isLiteral.! !
-
-!SutureCompacterTest methodsFor: 'testing' stamp: 'fbs 10/17/2012 21:13'!
-testWtf
-	| c d ones DDones D |
-	D := DerivingParser deriverBlock.
-	d := DelegateParser new.
-	ones := DerivingParser emptyString or: (1 asParser then: d).
-	d parser: ones.
-	DDones := D value: 1 value: (D value: 1 value: ones).
-	c := SutureCompacter value: DDones.
-	self assert: c isCat.
-	self assert: c first isEpsStar.
-	self assert: #(1) asSet equals: c first treeSet.! !
-rt of a cycle, it does no harm to point to the delegate's reference instead of the delegate. This also makes the parser one node smaller, potentially."
 	| c p |
 	p := $a asParser then: (DelegateParser new parser: $b asParser).
 	c := SutureCompacter value: p.

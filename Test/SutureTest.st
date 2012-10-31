@@ -4,16 +4,16 @@ DerivingParserTestCase subclass: #SutureTest
 	poolDictionaries: ''
 	category: 'Parsing-Derivatives-Test'!
 
+!SutureTest methodsFor: 'fixtures' stamp: 'fbs 10/24/2012 09:26'!
+sampleParser
+	^ Suture pointingAt: $1 asParser.! !
+
+
 !SutureTest methodsFor: 'testing - instance creation' stamp: 'fbs 10/24/2012 09:27'!
 testCanInstantiate
 	| p |
 	p := $1 asParser.
 	self assert: p equals: (Suture pointingAt: p) reference.! !
-
-
-!SutureTest methodsFor: 'fixtures' stamp: 'fbs 10/24/2012 09:26'!
-sampleParser
-	^ Suture pointingAt: $1 asParser.! !
 
 
 !SutureTest methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:31'!

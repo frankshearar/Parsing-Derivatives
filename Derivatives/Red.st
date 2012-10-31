@@ -33,7 +33,7 @@ subParsers
 	^ {parser}.! !
 
 
-!Red methodsFor: 'parsing' stamp: 'fbs 9/18/2012 09:41'!
+!Red methodsFor: 'parsing' stamp: 'fbs 10/25/2012 09:22'!
 reduce: aUnaryBlock
 	^ Red parser: self parser reduceWith: (aUnaryBlock compose: self reducer)! !
 
@@ -60,6 +60,6 @@ Red class
 !Red class methodsFor: 'instance creation' stamp: 'fbs 8/30/2012 16:45'!
 parser: aParser reduceWith: aUnaryBlock
 	^ self new parser: aParser reduceWith: aUnaryBlock.! !
- 8/30/2012 16:45'!
+8/30/2012 16:45'!
 parser: aParser reduceWith: aUnaryBlock
 	^ self new parser: aParser reduceWith: aUnaryBlock.! !

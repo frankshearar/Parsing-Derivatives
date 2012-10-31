@@ -18,9 +18,9 @@ testSubParsersReturnsEmptySet
 testIsEps
 	self assert: self sampleParser isEps.! !
 
-!EmptyStringTest methodsFor: 'testing - testing' stamp: 'fbs 9/4/2012 09:02'!
+!EmptyStringTest methodsFor: 'testing - testing' stamp: 'fbs 10/24/2012 21:41'!
 testIsNullable
-	self assert: self sampleParser isNullable.! !
+	self assert: (DerivingParser isNullableBlock value: self sampleParser).! !
 
 
 !EmptyStringTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 17:00'!
@@ -30,12 +30,14 @@ testDerivativeIsEmpty
 		description: 'd(_, eps*) == empty'! !
 
 
+!EmptyStringTest methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:36'!
+testDotLabelDescribesParser
+	| p |
+	p := self sampleParser.
+	self assert: (p dotLabel includesSubString: 'eps').! !
 
 
-!EmptyStringTest methodsFor: 'testing - parsing' stamp: 'fbs 10/12/2012 18:52'!
-testParseNullIsSetWithItself
-	"I don't understand this - it seems to just pollute the parse tree set - but it's what dparse.rkt does."
-	| parseNull |
+|
 	parseNull := DerivingParser parseNullBlock.
 	self assert: {DerivingParser emptyString} asSet equals: (parseNull value: DerivingParser emptyString).! !
 mpleParser generate read: 1).

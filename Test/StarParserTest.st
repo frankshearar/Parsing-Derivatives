@@ -30,8 +30,7 @@ testDerivativeOfStarParserPeelsOffOneCopyOfSubParser
 	self assert: p equals: d second.! !
 
 
-
-StarParserTest methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:45'!
+!StarParserTest methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:45'!
 testPrintAsDigraphPrintsSubparsers
 	| r digraph |
 	r := $1 asParser.

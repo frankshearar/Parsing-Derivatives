@@ -24,11 +24,12 @@ printAsDotNode: parserIntegerMap
 	Character cr.! !
 
 
+!EmptyString methodsFor: 'converting' stamp: 'fbs 10/23/2012 18:55'!
+asCollection
+	^ #().! !
 
 
-!EmptyString methodsFor: 'enumerating' stamp: 'fbs 9/5/2012 19:07'!
-do: aBlock
-	"Simulate an empty collection."! !
+empty collection."! !
 r: 'generating' stamp: 'fbs 10/29/2012 12:03'!
 generate
 	^ #(()) reading! !

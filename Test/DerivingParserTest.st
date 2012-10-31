@@ -12,12 +12,6 @@ testEmptyIsEmpty
 testEmptyIsMemoized
 	self assert: DerivingParser empty == DerivingParser empty.! !
 
-!DerivingParserTest methodsFor: 'testing - instance creation' stamp: 'fbs 10/12/2012 18:52'!
-testEmptyStringIsEmptyString
-	| parseNull |
-	parseNull := DerivingParser parseNullBlock.
-	self assert: {DerivingParser emptyString} asSet equals: (parseNull value: DerivingParser emptyString).! !
-
 !DerivingParserTest methodsFor: 'testing - instance creation' stamp: 'fbs 9/4/2012 08:55'!
 testEmptyStringIsMemoized
 	self assert: DerivingParser emptyString == DerivingParser emptyString.! !
@@ -32,7 +26,14 @@ testInADelegateCycleAllParsersAreChildren
 	self assert: (p isChildOf: d).
 	self assert: (d isChildOf: p).! !
 
-lf deny: DerivingParser isEmptyBlock == DerivingParser isEmptyBlock.! !
+
+!DerivingParserTest methodsFor: 'testing' stamp: 'fbs 10/24/2012 21:34'!
+testDeriverBlockReturnsNewBlock
+	self deny: DerivingParser deriverBlock == DerivingParser deriverBlock.! !
+
+!DerivingParserTest methodsFor: 'testing' stamp: 'fbs 10/24/2012 21:33'!
+testIsEmptyBlockReturnsNewBlock
+	self deny: DerivingParser isEmptyBlock == DerivingParser isEmptyBlock.! !
 
 !DerivingParserTest methodsFor: 'testing' stamp: 'fbs 10/24/2012 21:34'!
 testParseNullBlockReturnsNewBlock

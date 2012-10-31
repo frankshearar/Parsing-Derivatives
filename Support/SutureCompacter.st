@@ -3,8 +3,8 @@ Object subclass: #SutureCompacter
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Parsing-Derivatives-Support'!
-!SutureCompacter commentStamp: '<historical>' prior: 0!
-I compact parsers. To that end, I walk the graph of a parser in a post-order fashion. At each step I map a parser to its compacted form. Since the walk is post-order, a composite parser (Cat, Union) will have already had its subparsers mapped.!
+!SutureCompacter commentStamp: 'fbs 10/25/2012 09:19' prior: 0!
+I compact parsers. At each step as I traverse the parser graph. I map a parser to its compacted form. When I compact a composite parser (Cat, Union), it will have already had its subparsers mapped (and hence compacted).!
 
 
 !SutureCompacter methodsFor: 'accessing' stamp: 'fbs 10/18/2012 09:54'!
@@ -42,7 +42,7 @@ formsACycle: aDelegateParser
 	^ aDelegateParser isChildOf: aDelegateParser parser.! !
 
 
-!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/18/2012 09:53'!
+!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/25/2012 09:22'!
 compact: aParser
 	"Pre-order mark the parser as visited; post-order compact the parser (so that all its subparsers (except in a cycle) have been compacted)."
 	cache at: aParser ifPresent: [:p | ^ p].
@@ -62,20 +62,24 @@ compact: aParser
 			[DelegateParser] -> [self compactDelegate: aParser]}
 		otherwise: [aParser]).! !
 
-!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/19/2012 20:52'!
+!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/25/2012 09:21'!
 compactCat: aCat
 	| c1 c2 ref1 ref2 |
 	c1 := self cached: aCat first.
 	ref1 := c1 reference.
 	c2 := self cached: aCat second.
 	ref2 := c2 reference.
-	ref1 whenNullable: [:singleToken |
-		^ c2 reduce: [:w2 | singleToken asOrderedCollection , w2]].
-	ref2 whenNullable: [:singleToken |
-		^ c1 reduce: [:w1 | w1 asOrderedCollection , singleToken]].
+	
 	"If a Suture's reference isNil then it's a reference to a parent node (and is part of a cycle)."
-	(ref1 notNil and: [ref1 isEmpty]) ifTrue: [^ DerivingParser empty].
-	(ref2 notNil and: [ref2 isEmpty]) ifTrue: [^ DerivingParser empty].
+	ref1 ifNotNil: [
+		ref1 whenNullable: [:singleToken |
+			^ ref2 reduce: [:w2 | singleToken asArray , w2]].
+		ref1 isEmpty ifTrue: [^ DerivingParser empty]].
+	ref2 ifNotNil: [
+		ref2 whenNullable: [:singleToken |
+			^ ref1 reduce: [:w1 | w1 asArray , singleToken]].
+		ref2 isEmpty ifTrue: [^ DerivingParser empty]].
+
 	^ ((ref1 == aCat first) and: [ref2 == aCat second])
 		ifTrue: [aCat]
 		ifFalse: [c1 then: c2]! !
@@ -103,12 +107,19 @@ compactDelegate: aDelegateParser
 	
 	^ DelegateParser new.! !
 
-!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/18/2012 09:51'!
+!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/25/2012 09:27'!
 compactRed: aRed
-	| sub |
-	sub := (self cached: aRed parser) reference.
-	(sub = aRed parser)
-		ifTrue: [^ aRed "Already compact"].
+	| ref sub |
+	sub := self cached: aRed parser.
+	ref := sub reference.
+	"Red -> Red => RedRed"
+	(ref isRed)
+		ifTrue: [^ ref reduce: aRed reducer].
+	"Red -> Delegate -> Red => RedRed"
+	(ref isDelegate and: [ref isResolved] and: [ref parser isRed])
+		ifTrue: [^ ref parser reduce: aRed reducer].
+	"Already compact?"
+	(ref = aRed parser) ifTrue: [^ aRed].
 	^ sub reduce: aRed reducer.! !
 
 !SutureCompacter methodsFor: 'private' stamp: 'fbs 10/19/2012 09:29'!
@@ -145,14 +156,6 @@ tieSutures: aParser
 	sutures elementsForwardIdentityTo: references.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-SutureCompacter class
-	instanceVariableNames: ''!
-
-!SutureCompacter class methodsFor: 'instance creation' stamp: 'fbs 10/3/2012 09:17'!
-value: aParser
-	^ self new value: aParser.! !
- -- -- -- -- -- -- -- "!
 
 SutureCompacter class
 	instanceVariableNames: ''!

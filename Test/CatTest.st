@@ -115,15 +115,13 @@ testCompactionWithSingleElementSecondParseTreeIsRed
 	self assert: c isRed.! !
 
 
-tTest methodsFor: 'testing - parsing' stamp: 'fbs 9/10/2012 21:18'!
-testCompactionWithSingleElementSecondParseTreeIsRed
-	| c p |
-	p := $a asParser then: (EpsStar treeSet: {$b}).
-	c := Compacter value: p.
-	self assert: c isRed.! !
-
-
-(digraph includesSubString: f dotLabel) description: 'digraph doesn''t mention first subparser'.
+!CatTest methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:43'!
+testPrintAsDigraphPrintsSubparsers
+	| f s digraph |
+	f := $1 asParser.
+	s := DerivingParser emptyString.
+	digraph := (f then: s) printAsDigraph.
+	self assert: (digraph includesSubString: f dotLabel) description: 'digraph doesn''t mention first subparser'.
 	self assert: (digraph includesSubString: s dotLabel) description: 'digraph doesn''t mention second subparser'.! !
 
 

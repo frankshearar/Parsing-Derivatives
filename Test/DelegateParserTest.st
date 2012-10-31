@@ -41,12 +41,12 @@ testIsAsNullableAsSubparser
 testIsDelegate
 	self assert: self sampleParser isDelegate.! !
 
-!DelegateParserTest methodsFor: 'testing - testing' stamp: 'fbs 8/31/2012 12:11'!
+!DelegateParserTest methodsFor: 'testing - testing' stamp: 'fbs 10/24/2012 21:41'!
 testIsNullable
 	| p |
 	p := DelegateParser new.
 	p parser: $a asParser.
-	self deny: p isNullable.! !
+	self deny: (DerivingParser isNullableBlock value: p).! !
 
 !DelegateParserTest methodsFor: 'testing - testing' stamp: 'fbs 9/12/2012 09:33'!
 testResolvedDelegateIsResolved
@@ -78,10 +78,6 @@ testParseNullIsThatOfSubparser
 		parser: ((EpsStar treeSet: {1}) or: (EpsStar treeSet: {2}));
 		yourself.
 	self assert: #(1 2) asSet equals: (parseNull value: p).! !
-
-
-
-: (parseNull value: p).! !
 
 
 !DelegateParserTest methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:36'!

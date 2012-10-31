@@ -28,11 +28,13 @@ testSubParsersReturnsSubParser
 	self assert: {p parser} equals: p subParsers.! !
 
 
-!RedTest methodsFor: 'testing - testing' stamp: 'fbs 8/31/2012 08:07'!
+!RedTest methodsFor: 'testing - testing' stamp: 'fbs 10/24/2012 21:42'!
 testIsNullable
 	"A reduction is as nullable as its subparser."
-	self assert: ((EpsStar treeSet: {1}) reduce: [:x | x + 1]) isNullable.
-	self deny: (DerivingParser empty reduce: [:x | x + 1]) isNullable.! !
+	| n |
+	n := DerivingParser isNullableBlock.
+	self assert: (n value: ((EpsStar treeSet: {1}) reduce: [:x | x + 1])).
+	self deny: (DerivingParser isNullableBlock value: (DerivingParser empty reduce: [:x | x + 1])).! !
 
 !RedTest methodsFor: 'testing - testing' stamp: 'fbs 8/30/2012 16:43'!
 testIsRed
@@ -87,10 +89,6 @@ testReduceOfaRedComposesReducers
 	r := p reduce: [:x | x * 2].
 	self assert: r isRed.
 	self assert: r parser isLiteral.
-	self assert: 4 equals: (r reducer value: 1).! !
-
-
-rt: r parser isLiteral.
 	self assert: 4 equals: (r reducer value: 1).! !
 
 

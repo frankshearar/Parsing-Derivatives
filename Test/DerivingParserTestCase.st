@@ -41,9 +41,9 @@ testIsLazy
 testIsLiteral
 	self deny: self sampleParser isLiteral.! !
 
-!DerivingParserTestCase methodsFor: 'testing - testing' stamp: 'fbs 8/30/2012 22:12'!
+!DerivingParserTestCase methodsFor: 'testing - testing' stamp: 'fbs 10/24/2012 21:40'!
 testIsNullable
-	self deny: self sampleParser isNullable.! !
+	self deny: (DerivingParser isNullableBlock value: self sampleParser).! !
 
 !DerivingParserTestCase methodsFor: 'testing - testing' stamp: 'fbs 8/30/2012 16:43'!
 testIsRed
@@ -63,6 +63,15 @@ testNeverIsChildOfSelf
 	p := self sampleParser.
 	self deny: (p isChildOf: p).! !
 
+
+!DerivingParserTestCase methodsFor: 'testing - deriving' stamp: 'fbs 10/25/2012 09:31'!
+testDReturnsDerivative
+	| d pn |
+	d := DerivingParser deriverBlock.
+	pn := DerivingParser parseNullBlock.
+	self
+		assert: (pn value: (d value: $1 value: self sampleParser))
+		equals: (self sampleParser d: $1) parseNull.! !
 
 
 !DerivingParserTestCase methodsFor: 'testing - parsing' stamp: 'fbs 8/30/2012 18:14'!
@@ -106,19 +115,6 @@ testForce
 !DerivingParserTestCase methodsFor: 'testing' stamp: 'fbs 10/11/2012 19:13'!
 expectedFailures
 	^ self class == EmptyTest
-		ifTrue: [#()]
-		ifFalse: [#(testAnythingOrEmptyIsItself)]! !
-
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-DerivingParserTestCase class
-	instanceVariableNames: ''!
-
-!DerivingParserTestCase class methodsFor: 'as yet unclassified' stamp: 'fbs 8/30/2012 16:06'!
-isAbstract
-	^ self name = #DerivingParserTestCase! !
-== EmptyTest
 		ifTrue: [#()]
 		ifFalse: [#(testAnythingOrEmptyIsItself)]! !
 

@@ -40,11 +40,13 @@ testDerivativeIsDerivativeOfSubparser
 	self assert: (DerivingParser deriverBlock value: $b value: ($a asParser delay)) isEmpty.! !
 
 
-!DelayedParserTest methodsFor: 'testing - parsing' stamp: 'fbs 8/31/2012 08:07'!
+!DelayedParserTest methodsFor: 'testing - parsing' stamp: 'fbs 10/24/2012 21:41'!
 testIsNullable
 	"A delay is as nullable as its subparser."
-	self assert: ((EpsStar treeSet: {1}) delay) isNullable.
-	self deny: (DerivingParser empty delay) isNullable.! !
+	| n |
+	n := DerivingParser isNullableBlock.
+	self assert: (n value: (EpsStar treeSet: {1}) delay).
+	self deny: (n value: DerivingParser empty delay).! !
 
 !DelayedParserTest methodsFor: 'testing - parsing' stamp: 'fbs 10/12/2012 18:51'!
 testParseNullIsThatOfSubparser
@@ -58,9 +60,6 @@ testSubParsersReturnsForced
 	| p |
 	p := $a asParser delay.
 	self assert: {p parser} equals: p subParsers.! !
-
-
-rt: {p parser} equals: p subParsers.! !
 
 
 !DelayedParserTest methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:35'!

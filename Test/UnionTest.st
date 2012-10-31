@@ -78,12 +78,7 @@ testDerivativeIsUnionOfSubparserDerivatives
 	self assert: $b equals: d right second token.! !
 
 
- asParser.
-	self assert: u == (Compacter value: u).! !
-
-
-
-/24/2012 09:43'!
+!UnionTest methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:43'!
 testPrintAsDigraphPrintsSubparsers
 	| l r digraph |
 	l := $1 asParser.
