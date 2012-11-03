@@ -3,6 +3,20 @@ Parsing with Derivatives
 
 An implementation in Smalltalk of Matt Might's work on [parsing with derivatives](http://matt.might.net/articles/parsing-with-derivatives/).
 
+In Squeak:
+
+    Installer ss3 install: 'ConfigurationOfParsingDerivatives'.
+    (Smalltalk at: #ConfigurationOfParsingDerivatives) loadDevelopment.
+
+In Pharo:
+
+    Gofer new
+      ss3: 'ConfigurationOfParsingDerivatives';
+      version: 'ConfigurationOfParsingDerivatives-fbs.1';
+      update.
+
+The library does use some deep magic (`#elementsForwardIdentityTo:`, the multiple `#becomeForward:`) in `SutureCompacter`. Your Smalltalk might not support this.
+
 Copyright (C) 2012 by Frank Shearar
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
