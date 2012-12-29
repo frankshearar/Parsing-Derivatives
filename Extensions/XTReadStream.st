@@ -11,4 +11,3 @@ interleave: aXTReadStream
 			s].
 		[output put: next value get]
 			on: Incomplete do: [output put: next value get]].! !
-alse: [aXTReadStream]) get]].! !

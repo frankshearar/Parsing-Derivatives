@@ -18,7 +18,7 @@ cached: aParser
 	^ suture.! !
 
 
-!SutureCompacter methodsFor: 'evaluating' stamp: 'fbs 10/10/2012 19:19'!
+!SutureCompacter methodsFor: 'evaluating' stamp: 'fbs 12/29/2012 11:05'!
 value: aParser
 	| visited |
 	cache at: aParser ifPresent: [:compacted | ^ compacted].

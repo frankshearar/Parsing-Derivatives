@@ -290,32 +290,3 @@ initialize
 
 
 DerivingParser initialize!
-wFrom: {#()}].
-			[EpsStar] -> [p treeSet].
-			[Literal] -> [Set new].
-			[Union] -> [(pn value: p left) union: (pn value: p right)].
-			[Cat] -> [ | concat |
-				concat := [:t1 :t2 | t1 asArray , t2 asArray].
-				(pn value: p first)
-					cartesianProduct: concat
-					with: (pn value: p second)].
-			[Red] -> [(pn value: p parser) collect: p reducer].
-			[StarParser] -> [Set newFrom: #(#())].
-			[DelayedParser] -> [pn value: p force].
-			[DelegateParser] -> [p isResolved ifFalse: [UnresolvedDelegate accessing: p]. pn value: p parser].
-			[Suture] -> [Set new]}
-		otherwise: [Error signal: 'parseNull not defined for ', p className]] lfpWithBottom: Set new.
-	^ pn.! !
-
-
-!DerivingParser class methodsFor: 'class initialization' stamp: 'fbs 9/28/2012 09:50'!
-initialize
-	EmptyParser := Empty new.
-	EmptyStringParser := EmptyString new.
-	DeriverBlock := self deriverBlock.
-	EmptyBlock := self isEmptyBlock.
-	NullableBlock := self isNullableBlock.
-	ParseNullBlock := self parseNullBlock.! !
-
-
-DerivingParser initialize!

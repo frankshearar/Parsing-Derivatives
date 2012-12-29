@@ -24,4 +24,3 @@ testRightRecursiveGrammar
 !ParseTests methodsFor: 'testing - parsers' stamp: 'fbs 8/30/2012 16:32'!
 testThenCreatesACatParser
 	self assert: ($a asParser then: $b asParser) isCat.! !
-self assert: ($a asParser then: $b asParser) isCat.! !
