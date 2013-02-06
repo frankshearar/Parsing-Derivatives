@@ -7,14 +7,14 @@ Object subclass: #SutureCompacter
 I compact parsers. At each step as I traverse the parser graph. I map a parser to its compacted form. When I compact a composite parser (Cat, Union), it will have already had its subparsers mapped (and hence compacted).!
 
 
-!SutureCompacter methodsFor: 'accessing' stamp: 'fbs 10/18/2012 09:54'!
+!SutureCompacter methodsFor: 'accessing' stamp: 'fbs 2/1/2013 08:35'!
 cached: aParser
 	"If a delegate doesn't form part of a cycle, it does no harm to point to the delegate's reference instead of the delegate. This also makes the parser one node smaller, potentially."
 	| p suture |
 	suture := cache at: aParser.
 	p := suture reference.
 	(p notNil and: [p isDelegate and: [(self formsACycle: p) not]]) ifTrue: [
-		^ cache at: p parser].
+		^ self cached: p parser].
 	^ suture.! !
 
 
@@ -35,20 +35,21 @@ initialize
 	cache := Dictionary new.! !
 
 
-!SutureCompacter methodsFor: 'testing' stamp: 'fbs 10/18/2012 16:53'!
+!SutureCompacter methodsFor: 'testing' stamp: 'fbs 2/1/2013 08:40'!
 formsACycle: aDelegateParser
 	"If aDelegateParser is not yet resolved, treat it as though it forms a cycle."
-	[aDelegateParser parser] on: UnresolvedDelegate do: [^ true].
+	aDelegateParser isResolved ifFalse: [^ true].
 	^ aDelegateParser isChildOf: aDelegateParser parser.! !
 
 
-!SutureCompacter methodsFor: 'private' stamp: 'fbs 10/25/2012 09:22'!
+!SutureCompacter methodsFor: 'private' stamp: 'fbs 1/24/2013 23:52'!
 compact: aParser
 	"Pre-order mark the parser as visited; post-order compact the parser (so that all its subparsers (except in a cycle) have been compacted)."
+	| cached |
 	cache at: aParser ifPresent: [:p | ^ p].
-	cache at: aParser put: Suture new.
+	cached := cache at: aParser put: Suture new.
 	aParser subParsers do: [:p | self compact: p].
-	(cache at: aParser) reference: (aParser class
+	cached reference: (aParser class
 		caseOf: {
 			"Optimise case testing by putting the most common cases first"
 			[Empty] -> [aParser].

@@ -13,9 +13,98 @@ As a result, my subclasses represent non-blocking parsers: they may consume part
 To put it another way, derivation calculates the parser's continuation.!
 
 
+!DerivingParser methodsFor: 'accessing' stamp: 'fbs 9/5/2012 19:34'!
+subParsers
+	"Most parsers don't have subparsers."
+	^ #().! !
+
+
+!DerivingParser methodsFor: 'delaying' stamp: 'fbs 8/30/2012 21:29'!
+delay
+	^ [self] asParser.! !
+
+!DerivingParser methodsFor: 'delaying' stamp: 'fbs 9/5/2012 09:49'!
+force
+	^ self.! !
+
+
 !DerivingParser methodsFor: 'deriving' stamp: 'fbs 9/28/2012 09:52'!
 d: anObject
 	^ DeriverBlock value: anObject value: self.! !
+
+
+!DerivingParser methodsFor: 'evaluating' stamp: 'fbs 9/20/2012 17:13'!
+whenNullable: aUnaryBlock
+	"If this parser's parse forest contains exactly one tree, pass in that tree to aUnaryBlock."
+	| trees |
+	trees := self parseNull.
+	(trees size = 1) ifTrue: [aUnaryBlock value: trees anyOne].! !
+
+
+!DerivingParser methodsFor: 'generating' stamp: 'fbs 10/25/2012 18:42'!
+generate
+	"Many parsers don't parse anything."
+	^ #() reading.! !
+
+
+!DerivingParser methodsFor: 'inspecting' stamp: 'fbs 10/9/2012 09:33'!
+inspectorClass
+	^ ParserInspector! !
+
+
+!DerivingParser methodsFor: 'parsing' stamp: 'fbs 9/28/2012 09:46'!
+or: aParser
+	"CANNOT check this first: doing so forces evaluation of the whole graph before we can memoise anything!!"
+	"aParser isEmpty ifTrue: [^ self]."
+	^ Union left: self delay right: aParser delay.! !
+
+!DerivingParser methodsFor: 'parsing' stamp: 'fbs 9/21/2012 18:50'!
+parseNull
+	"Can I parse the empty string?"
+	^ ParseNullBlock value: self.! !
+
+!DerivingParser methodsFor: 'parsing' stamp: 'fbs 10/25/2012 09:22'!
+reduce: aUnaryBlock
+	^ Red parser: self reduceWith: aUnaryBlock! !
+
+!DerivingParser methodsFor: 'parsing' stamp: 'fbs 9/13/2012 19:36'!
+star
+	^ StarParser repeating: self.! !
+
+!DerivingParser methodsFor: 'parsing' stamp: 'fbs 9/28/2012 09:46'!
+then: aParser
+	"CANNOT check this first: doing so forces evaluation of the whole graph before we can memoise anything!!"
+"	aParser isEmpty ifTrue: [^ DerivingParser empty]."
+	^ Cat with: self delay with: aParser delay.! !
+
+
+!DerivingParser methodsFor: 'printing' stamp: 'fbs 9/6/2012 09:16'!
+dotLabel
+	^ self className! !
+
+!DerivingParser methodsFor: 'printing' stamp: 'fbs 9/21/2012 09:27'!
+printAsDigraph
+	| c intmap i |
+	"Post-order makes for nicer graphs."
+	i := 0.
+	intmap := Dictionary new.
+	PreOrderParserWalker walk: self collecting: [:p | intmap at: p put: i. i := i + 1].
+	c := (PostOrderParserWalker walk: self collecting: [:p | p printAsDotNode: intmap]) asOrderedCollection.
+	c reverseInPlace.
+	c addAllFirst: {'digraph {', Character cr. 'ordering=out', Character cr}.
+	
+	c addLast: ('}', Character cr).
+	^ c reduce: #,.! !
+
+!DerivingParser methodsFor: 'printing' stamp: 'fbs 9/14/2012 21:09'!
+printAsDotNode: parserIntegerMap
+	"parserIntegerMap maps parsers to integers. We do this manually because #identityHash is not a reliable way (by design) of distinguishing between two objects."
+	^ self printNode: parserIntegerMap.! !
+
+!DerivingParser methodsFor: 'printing' stamp: 'fbs 9/14/2012 21:20'!
+printNode: parserIntegerMap
+	^ ('{1} [label="{2} ({1})"]' format: {(parserIntegerMap at: self) printString. self dotLabel}),
+		Character cr.! !
 
 
 !DerivingParser methodsFor: 'testing' stamp: 'fbs 8/30/2012 16:35'!
@@ -76,95 +165,6 @@ isStar
 isUnion
 	^ false.! !
 
-
-!DerivingParser methodsFor: 'delaying' stamp: 'fbs 8/30/2012 21:29'!
-delay
-	^ [self] asParser.! !
-
-!DerivingParser methodsFor: 'delaying' stamp: 'fbs 9/5/2012 09:49'!
-force
-	^ self.! !
-
-
-!DerivingParser methodsFor: 'evaluating' stamp: 'fbs 9/20/2012 17:13'!
-whenNullable: aUnaryBlock
-	"If this parser's parse forest contains exactly one tree, pass in that tree to aUnaryBlock."
-	| trees |
-	trees := self parseNull.
-	(trees size = 1) ifTrue: [aUnaryBlock value: trees anyOne].! !
-
-
-!DerivingParser methodsFor: 'parsing' stamp: 'fbs 9/28/2012 09:46'!
-or: aParser
-	"CANNOT check this first: doing so forces evaluation of the whole graph before we can memoise anything!!"
-	"aParser isEmpty ifTrue: [^ self]."
-	^ Union left: self delay right: aParser delay.! !
-
-!DerivingParser methodsFor: 'parsing' stamp: 'fbs 9/21/2012 18:50'!
-parseNull
-	"Can I parse the empty string?"
-	^ ParseNullBlock value: self.! !
-
-!DerivingParser methodsFor: 'parsing' stamp: 'fbs 10/25/2012 09:22'!
-reduce: aUnaryBlock
-	^ Red parser: self reduceWith: aUnaryBlock! !
-
-!DerivingParser methodsFor: 'parsing' stamp: 'fbs 9/13/2012 19:36'!
-star
-	^ StarParser repeating: self.! !
-
-!DerivingParser methodsFor: 'parsing' stamp: 'fbs 9/28/2012 09:46'!
-then: aParser
-	"CANNOT check this first: doing so forces evaluation of the whole graph before we can memoise anything!!"
-"	aParser isEmpty ifTrue: [^ DerivingParser empty]."
-	^ Cat with: self delay with: aParser delay.! !
-
-
-!DerivingParser methodsFor: 'accessing' stamp: 'fbs 9/5/2012 19:34'!
-subParsers
-	"Most parsers don't have subparsers."
-	^ #().! !
-
-
-!DerivingParser methodsFor: 'printing' stamp: 'fbs 9/6/2012 09:16'!
-dotLabel
-	^ self className! !
-
-!DerivingParser methodsFor: 'printing' stamp: 'fbs 9/21/2012 09:27'!
-printAsDigraph
-	| c intmap i |
-	"Post-order makes for nicer graphs."
-	i := 0.
-	intmap := Dictionary new.
-	PreOrderParserWalker walk: self collecting: [:p | intmap at: p put: i. i := i + 1].
-	c := (PostOrderParserWalker walk: self collecting: [:p | p printAsDotNode: intmap]) asOrderedCollection.
-	c reverseInPlace.
-	c addAllFirst: {'digraph {', Character cr. 'ordering=out', Character cr}.
-	
-	c addLast: ('}', Character cr).
-	^ c reduce: #,.! !
-
-!DerivingParser methodsFor: 'printing' stamp: 'fbs 9/14/2012 21:09'!
-printAsDotNode: parserIntegerMap
-	"parserIntegerMap maps parsers to integers. We do this manually because #identityHash is not a reliable way (by design) of distinguishing between two objects."
-	^ self printNode: parserIntegerMap.! !
-
-!DerivingParser methodsFor: 'printing' stamp: 'fbs 9/14/2012 21:20'!
-printNode: parserIntegerMap
-	^ ('{1} [label="{2} ({1})"]' format: {(parserIntegerMap at: self) printString. self dotLabel}),
-		Character cr.! !
-
-
-!DerivingParser methodsFor: 'inspecting' stamp: 'fbs 10/9/2012 09:33'!
-inspectorClass
-	^ ParserInspector! !
-
-
-!DerivingParser methodsFor: 'generating' stamp: 'fbs 10/25/2012 18:42'!
-generate
-	"Many parsers don't parse anything."
-	^ #() reading.! !
-
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 DerivingParser class
@@ -179,7 +179,7 @@ emptyString
 	^ EmptyStringParser! !
 
 
-!DerivingParser class methodsFor: 'private' stamp: 'fbs 10/15/2012 09:42'!
+!DerivingParser class methodsFor: 'private' stamp: 'fbs 1/18/2013 08:51'!
 deriverBlock
 	| d |
 	d := nil.
@@ -191,6 +191,9 @@ deriverBlock
 			[Literal] -> [(o = p token)
 							ifTrue: [EpsStar treeSet: {o}]
 							ifFalse: [DerivingParser empty]].
+			[LiteralSet] -> [(p tokens includes: o)
+				ifTrue: [EpsStar treeSet: {o}]
+				ifFalse: [DerivingParser empty]].
 			[StarParser] -> [(d value: o value: p parser) then: p].
 			[Union] -> [[d value: o value: p left] asParser
 				or: [d value: o value: p right] asParser].
@@ -214,7 +217,7 @@ flushCaches
 	NullableBlock := self isNullableBlock.
 	ParseNullBlock := self parseNullBlock.! !
 
-!DerivingParser class methodsFor: 'private' stamp: 'fbs 10/1/2012 16:40'!
+!DerivingParser class methodsFor: 'private' stamp: 'fbs 2/1/2013 08:58'!
 isEmptyBlock
 	| e |
 	e := nil.
@@ -224,6 +227,7 @@ isEmptyBlock
 			[EmptyString] -> [false].
 			[EpsStar] -> [false].
 			[Literal] -> [false].
+			[LiteralSet] -> [false].
 			[StarParser] -> [false].
 			[Union] -> [(e value: p left) and: [e value: p right]].
 			[Cat] -> [(e value: p first) or: [e value: p second]].
@@ -234,7 +238,7 @@ isEmptyBlock
 			otherwise: [Error signal: 'isEmpty not defined for ', p className]] lfpWithBottom: false.
 	^ e.! !
 
-!DerivingParser class methodsFor: 'private' stamp: 'fbs 10/1/2012 16:39'!
+!DerivingParser class methodsFor: 'private' stamp: 'fbs 1/18/2013 08:50'!
 isNullableBlock
 	| n |
 	n := nil.
@@ -244,6 +248,7 @@ isNullableBlock
 			[EmptyString] -> [true].
 			[EpsStar] -> [true].
 			[Literal] -> [false].
+			[LiteralSet] -> [false].
 			[Union] -> [(n value: p left) or: [n value: p right]].
 			[Cat] -> [(n value: p first) and: [n value: p second]].
 			[Red] -> [n value: p parser].
@@ -254,7 +259,7 @@ isNullableBlock
 		otherwise: [Error signal: 'isNullable not defined for ', p className]] lfpWithBottom: false.
 	^ n.! !
 
-!DerivingParser class methodsFor: 'private' stamp: 'fbs 10/19/2012 21:14'!
+!DerivingParser class methodsFor: 'private' stamp: 'fbs 1/18/2013 08:49'!
 parseNullBlock
 	| pn |
 	pn := nil.
@@ -264,6 +269,7 @@ parseNullBlock
 			[EmptyString] -> [Set newFrom: {#()}].
 			[EpsStar] -> [p treeSet].
 			[Literal] -> [Set new].
+			[LiteralSet] -> [Set new].
 			[Union] -> [(pn value: p left) union: (pn value: p right)].
 			[Cat] -> [ | concat |
 				concat := [:t1 :t2 | t1 asArray , t2 asArray].

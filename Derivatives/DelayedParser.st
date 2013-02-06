@@ -33,9 +33,10 @@ subParsers
 delay
 	^ self.! !
 
-!DelayedParser methodsFor: 'delaying' stamp: 'fbs 8/30/2012 21:30'!
+!DelayedParser methodsFor: 'delaying' stamp: 'fbs 2/1/2013 08:49'!
 force
-	^ parser := parser value.! !
+	parser isBlock ifTrue: [parser := parser value].
+	^ parser.! !
 
 
 !DelayedParser methodsFor: 'printing' stamp: 'fbs 9/6/2012 09:41'!
