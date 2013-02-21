@@ -4,11 +4,6 @@ DerivingParserTestCase subclass: #LiteralSetTest
 	poolDictionaries: ''
 	category: 'Parsing-Derivatives-Test'!
 
-!LiteralSetTest methodsFor: 'testing - testing' stamp: 'fbs 2/1/2013 08:53'!
-testIsLiteral
-	self assert: self sampleParser isLiteral.! !
-
-
 !LiteralSetTest methodsFor: 'fixtures' stamp: 'fbs 2/1/2013 08:53'!
 sampleParser
 	^ LiteralSet tokens: {$a. $b. $c}.! !
@@ -31,18 +26,6 @@ testDerivativeOfLiteralWrtSelfIsEps
 		self assert: {token} asSet equals: dLit treeSet]! !
 
 
-!LiteralSetTest methodsFor: 'testing - parsing' stamp: 'fbs 2/1/2013 08:53'!
-testParseNullIsEmptySet
-	| parseNull |
-	parseNull := DerivingParser parseNullBlock.
-	self assert: Set new equals: (parseNull value: $a asParser).! !
-
-
-!LiteralSetTest methodsFor: 'testing - accessing' stamp: 'fbs 2/1/2013 08:56'!
-testSubParsersReturnsEmptySet
-	self assert: {} equals: self sampleParser subParsers.! !
-
-
 !LiteralSetTest methodsFor: 'testing - generating' stamp: 'fbs 2/1/2013 17:28'!
 testGenerateOnlyProducesAtMostNResults
 	| p |
@@ -54,3 +37,21 @@ testGenerateProducesTheLiteral
 	| p |
 	p := self sampleParser.
 	self assert: p tokens equals: (self sampleParser generate read: (p tokens size)).! !
+
+
+!LiteralSetTest methodsFor: 'testing - testing' stamp: 'fbs 2/1/2013 08:53'!
+testIsLiteral
+	self assert: self sampleParser isLiteral.! !
+
+
+!LiteralSetTest methodsFor: 'testing - parsing' stamp: 'fbs 2/1/2013 08:53'!
+testParseNullIsEmptySet
+	| parseNull |
+	parseNull := DerivingParser parseNullBlock.
+	self assert: Set new equals: (parseNull value: $a asParser).! !
+
+
+!LiteralSetTest methodsFor: 'testing - accessing' stamp: 'fbs 2/1/2013 08:56'!
+testSubParsersReturnsEmptySet
+	self assert: {} equals: self sampleParser subParsers.! !
+

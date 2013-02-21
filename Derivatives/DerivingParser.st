@@ -170,6 +170,16 @@ isUnion
 DerivingParser class
 	instanceVariableNames: ''!
 
+!DerivingParser class methodsFor: 'class initialization' stamp: 'fbs 9/28/2012 09:50'!
+initialize
+	EmptyParser := Empty new.
+	EmptyStringParser := EmptyString new.
+	DeriverBlock := self deriverBlock.
+	EmptyBlock := self isEmptyBlock.
+	NullableBlock := self isNullableBlock.
+	ParseNullBlock := self parseNullBlock.! !
+
+
 !DerivingParser class methodsFor: 'instance creation' stamp: 'fbs 8/30/2012 16:00'!
 empty
 	^ EmptyParser! !
@@ -283,16 +293,6 @@ parseNullBlock
 			[Suture] -> [Set new]}
 		otherwise: [Error signal: 'parseNull not defined for ', p className]] lfpWithBottom: Set new.
 	^ pn.! !
-
-
-!DerivingParser class methodsFor: 'class initialization' stamp: 'fbs 9/28/2012 09:50'!
-initialize
-	EmptyParser := Empty new.
-	EmptyStringParser := EmptyString new.
-	DeriverBlock := self deriverBlock.
-	EmptyBlock := self isEmptyBlock.
-	NullableBlock := self isNullableBlock.
-	ParseNullBlock := self parseNullBlock.! !
 
 
 DerivingParser initialize!

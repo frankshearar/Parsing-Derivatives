@@ -18,30 +18,6 @@ cached: aParser
 	^ suture.! !
 
 
-!SutureCompacter methodsFor: 'evaluating' stamp: 'fbs 12/29/2012 11:05'!
-value: aParser
-	| visited |
-	cache at: aParser ifPresent: [:compacted | ^ compacted].
-	visited := IdentitySet new.
-	self compact: aParser.
-	self resolveDelegates: (cache at: aParser).
-	self tieSutures: aParser.
-	^ cache at: aParser.! !
-
-
-!SutureCompacter methodsFor: 'initialize-release' stamp: 'fbs 10/3/2012 09:17'!
-initialize
-	super initialize.
-	cache := Dictionary new.! !
-
-
-!SutureCompacter methodsFor: 'testing' stamp: 'fbs 2/1/2013 08:40'!
-formsACycle: aDelegateParser
-	"If aDelegateParser is not yet resolved, treat it as though it forms a cycle."
-	aDelegateParser isResolved ifFalse: [^ true].
-	^ aDelegateParser isChildOf: aDelegateParser parser.! !
-
-
 !SutureCompacter methodsFor: 'private' stamp: 'fbs 1/24/2013 23:52'!
 compact: aParser
 	"Pre-order mark the parser as visited; post-order compact the parser (so that all its subparsers (except in a cycle) have been compacted)."
@@ -155,6 +131,30 @@ tieSutures: aParser
 	sutures do: [:s | cache at: s put: s reference].
 	"Magically make everything that points to a Suture point to the Suture's reference, tying the cyclic knots."
 	sutures elementsForwardIdentityTo: references.! !
+
+
+!SutureCompacter methodsFor: 'testing' stamp: 'fbs 2/1/2013 08:40'!
+formsACycle: aDelegateParser
+	"If aDelegateParser is not yet resolved, treat it as though it forms a cycle."
+	aDelegateParser isResolved ifFalse: [^ true].
+	^ aDelegateParser isChildOf: aDelegateParser parser.! !
+
+
+!SutureCompacter methodsFor: 'initialize-release' stamp: 'fbs 10/3/2012 09:17'!
+initialize
+	super initialize.
+	cache := Dictionary new.! !
+
+
+!SutureCompacter methodsFor: 'evaluating' stamp: 'fbs 12/29/2012 11:05'!
+value: aParser
+	| visited |
+	cache at: aParser ifPresent: [:compacted | ^ compacted].
+	visited := IdentitySet new.
+	self compact: aParser.
+	self resolveDelegates: (cache at: aParser).
+	self tieSutures: aParser.
+	^ cache at: aParser.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 

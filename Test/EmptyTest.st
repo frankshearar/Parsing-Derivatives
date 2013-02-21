@@ -37,3 +37,4 @@ testSubParsersReturnsEmptySet
 !EmptyTest methodsFor: 'testing - generating' stamp: 'fbs 10/25/2012 18:43'!
 testGenerateProducesNothing
 	self should: [self sampleParser generate read: 1] raise: Incomplete.! !
+
