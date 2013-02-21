@@ -25,6 +25,10 @@ testIsDelegate
 testIsEmpty
 	self deny: self sampleParser isEmpty.! !
 
+!DerivingParserTestCase methodsFor: 'testing - testing' stamp: 'fbs 2/15/2013 09:30'!
+testIsEmptyParser
+	self deny: self sampleParser isEmptyParser.! !
+
 !DerivingParserTestCase methodsFor: 'testing - testing' stamp: 'fbs 8/30/2012 16:03'!
 testIsEps
 	self deny: self sampleParser isEps.! !
@@ -80,18 +84,22 @@ testAnythingOrEmptyIsItself
 	p := self sampleParser.
 	self assert: (p or: DerivingParser empty) == p.! !
 
-!DerivingParserTestCase methodsFor: 'testing - parsing' stamp: 'fbs 8/31/2012 09:23'!
+!DerivingParserTestCase methodsFor: 'testing - parsing' stamp: 'fbs 2/18/2013 08:34'!
 testAnythingThenEmptyIsEmpty
-	| p |
+	| p e cat |
+	e := DerivingParser emptyExpected: 1 actual: 2.
 	p := self sampleParser.
-	self assert: (p then: DerivingParser empty) isEmpty.! !
+	cat := p then: e.
+	self assert: cat isEmpty.
+	self assert: 1 equals: cat expected.
+	self assert: 2 equals: cat actual.! !
 
-!DerivingParserTestCase methodsFor: 'testing - parsing' stamp: 'fbs 10/10/2012 18:58'!
+!DerivingParserTestCase methodsFor: 'testing - parsing' stamp: 'fbs 2/8/2013 08:42'!
 testCompact
 	| p |
 	"Most parsers are already compact."
 	p := self sampleParser.
-	self assert: p equals: (SutureCompacter value: p).! !
+	self assert: p equals: (ParserCompacter value: p).! !
 
 !DerivingParserTestCase methodsFor: 'testing - parsing' stamp: 'fbs 8/30/2012 18:16'!
 testEmptyOrAnythingIsItself
@@ -111,12 +119,6 @@ testForce
 	p := self sampleParser.
 	self assert: p force == p.! !
 
-
-!DerivingParserTestCase methodsFor: 'testing' stamp: 'fbs 10/11/2012 19:13'!
-expectedFailures
-	^ self class == EmptyTest
-		ifTrue: [#()]
-		ifFalse: [#(testAnythingOrEmptyIsItself)]! !
 
 
 !DerivingParserTestCase methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:35'!

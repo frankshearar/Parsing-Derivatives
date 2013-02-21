@@ -13,20 +13,42 @@ sampleParser
 testIsEmpty
 	self assert: self sampleParser isEmpty.! !
 
+!EmptyTest methodsFor: 'testing - testing' stamp: 'fbs 2/15/2013 09:30'!
+testIsEmptyParser
+	self assert: self sampleParser isEmptyParser.! !
 
-!EmptyTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 17:00'!
+
+!EmptyTest methodsFor: 'testing - deriving' stamp: 'fbs 2/21/2013 08:44'!
 testDerivativeIsItself
-	| D |
+	| D specialE |
 	D := DerivingParser deriverBlock.
 	self assert: (D value: $a value: DerivingParser empty) isEmpty.
-	self assert: (D value: $a value: DerivingParser empty) == DerivingParser empty.! !
+	self assert: (D value: $a value: DerivingParser empty) == DerivingParser empty description: 'Exact empty not returned (unspecified empty)'.
+	
+	specialE := DerivingParser emptyExpected: 1 actual: 2.
+	self assert: specialE = (D value: 3 value: specialE) description: 'Exact empty not returned (specified empty)'.! !
 
+
+!EmptyTest methodsFor: 'testing - parsing' stamp: 'fbs 2/18/2013 21:35'!
+testAnythingThenEmptyIsEmpty
+	| p e cat |
+	e := DerivingParser emptyExpected: 1 actual: 2.
+	p := self sampleParser.
+	cat := p then: e.
+	self assert: cat == p.! !
 
 !EmptyTest methodsFor: 'testing - parsing' stamp: 'fbs 10/12/2012 18:52'!
 testParseNullIsEmptySet
 	| parseNull |
 	parseNull := DerivingParser parseNullBlock.
 	self assert: Set new equals: (parseNull value: DerivingParser empty).! !
+
+!EmptyTest methodsFor: 'testing - parsing' stamp: 'fbs 2/15/2013 14:36'!
+testReduceOfAnEmptyIsThatEmpty
+	| e r |
+	e := DerivingParser emptyExpected: 1 actual: 2.
+	r := e reduce: #printString.
+	self assert: e == r description: 'Red -> Empty => Empty'.! !
 
 
 !EmptyTest methodsFor: 'testing - accessing' stamp: 'fbs 9/5/2012 19:32'!
@@ -38,3 +60,9 @@ testSubParsersReturnsEmptySet
 testGenerateProducesNothing
 	self should: [self sampleParser generate read: 1] raise: Incomplete.! !
 
+
+!EmptyTest methodsFor: 'testing - creating' stamp: 'fbs 2/14/2013 20:58'!
+testEmptyMayHaveErrorMessage
+	| e |
+	e := Empty expected: 1 actual: 2.
+	self assert: 'Expected a <1>, found a <2>' equals: e error.! !

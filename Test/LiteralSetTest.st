@@ -9,11 +9,12 @@ sampleParser
 	^ LiteralSet tokens: {$a. $b. $c}.! !
 
 
-!LiteralSetTest methodsFor: 'testing - deriving' stamp: 'fbs 2/1/2013 08:53'!
+!LiteralSetTest methodsFor: 'testing - deriving' stamp: 'fbs 2/12/2013 17:21'!
 testDerivativeOfLiteralWrtAnotherObjectIsEmpty
 	| d |
-	d := DerivingParser deriverBlock value: $d value: $a asParser.
-	self assert: d isEmpty.! !
+	d := DerivingParser deriverBlock value: $d value: self sampleParser.
+	self assert: d isEmpty.
+	self assert: 'Expected one of <$a, $b, $c>, found a <$d>' equals: d error.! !
 
 !LiteralSetTest methodsFor: 'testing - deriving' stamp: 'fbs 2/1/2013 08:55'!
 testDerivativeOfLiteralWrtSelfIsEps
@@ -55,3 +56,16 @@ testParseNullIsEmptySet
 testSubParsersReturnsEmptySet
 	self assert: {} equals: self sampleParser subParsers.! !
 
+
+!LiteralSetTest methodsFor: 'testing - printing' stamp: 'fbs 2/18/2013 21:40'!
+testDotLabelDescribesParser
+	| p |
+	p := self sampleParser.
+	self assert: (p dotLabel includesSubString: 'LiteralSet').! !
+
+!LiteralSetTest methodsFor: 'testing - printing' stamp: 'fbs 2/18/2013 21:41'!
+testPrintAsDigraphMentionsTokens
+	| p digraph |
+	p := LiteralSet tokens: #(1 2).
+	digraph := p printAsDigraph.
+	self assert: (digraph includesSubString: p tokens printString).! !

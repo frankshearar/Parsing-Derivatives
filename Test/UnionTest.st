@@ -50,12 +50,25 @@ testParseNullIsUnionOfSubParsersParseTrees
 	parseNull := DerivingParser parseNullBlock.
 	self assert: {1. 2} asSet equals: (parseNull value: ((EpsStar treeSet: {1}) or: (EpsStar treeSet: {2}))).! !
 
-!UnionTest methodsFor: 'testing - parsing' stamp: 'fbs 10/19/2012 11:16'!
+!UnionTest methodsFor: 'testing - parsing' stamp: 'fbs 2/8/2013 08:47'!
 testUnionOfCompactedParsersCompactsToItself
 	| u |
 	u := $a asParser or: $b asParser.
-	self assert: u == (SutureCompacter value: u).! !
+	self assert: u == (ParserCompacter value: u).! !
 
+
+!UnionTest methodsFor: 'testing - deriving' stamp: 'fbs 2/14/2013 21:50'!
+testCompactedEmptyUnionGivesDecentErrorMessage
+	| c u |
+	"The result of having derived '1 asParser or: 2 asParser' with respect to 3."
+	u := Union
+		left: (DerivingParser emptyExpected: 1actual: 3)
+		right: (DerivingParser emptyExpected: 2 actual: 3).
+	c := ParserCompacter value: u.
+	self assert: c isEmpty.
+	self assert: #(1 2) equals: c expected.
+	self assert: 3 equals: c actual.
+	self assert: 'Expected one of <1, 2>, found a <3>' equals: c error.! !
 
 !UnionTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 17:05'!
 testDerivativeIsUnionOfSubparserDerivatives

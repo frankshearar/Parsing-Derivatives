@@ -8,6 +8,10 @@ TestCase subclass: #DerivingParserTest
 testEmptyIsEmpty
 	self assert: DerivingParser empty isEmpty.! !
 
+!DerivingParserTest methodsFor: 'testing - instance creation' stamp: 'fbs 2/15/2013 09:29'!
+testEmptyIsEmptyParser
+	self assert: DerivingParser empty isEmptyParser.! !
+
 !DerivingParserTest methodsFor: 'testing - instance creation' stamp: 'fbs 9/4/2012 08:55'!
 testEmptyIsMemoized
 	self assert: DerivingParser empty == DerivingParser empty.! !

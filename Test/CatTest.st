@@ -83,35 +83,35 @@ testDerivativeFollowsLeibniz
 	self assert: 2 equals: d second token.! !
 
 
-!CatTest methodsFor: 'testing - parsing' stamp: 'fbs 10/18/2012 21:47'!
+!CatTest methodsFor: 'testing - parsing' stamp: 'fbs 2/8/2013 08:42'!
 testCompactionCompactsSubparsers
 	| c p l r |
 	l := $a asParser.
 	r := $b asParser.
 	p := (DelegateParser new parser: l) then: (DelegateParser new parser: r).
-	c := SutureCompacter value: p.
+	c := ParserCompacter value: p.
 	self assert: c isCat.
 	self assert: l equals: c first.
 	self assert: r equals: c second.! !
 
-!CatTest methodsFor: 'testing - parsing' stamp: 'fbs 10/19/2012 09:53'!
+!CatTest methodsFor: 'testing - parsing' stamp: 'fbs 2/8/2013 08:46'!
 testCompactionOfCompactParsersIsItself
 	| p |
 	p := $a asParser then: $b asParser.
-	self assert: p == (SutureCompacter value: p).! !
+	self assert: p == (ParserCompacter value: p).! !
 
-!CatTest methodsFor: 'testing - parsing' stamp: 'fbs 10/19/2012 09:53'!
+!CatTest methodsFor: 'testing - parsing' stamp: 'fbs 2/8/2013 08:46'!
 testCompactionWithSingleElementFirstParseTreeIsRed
 	| c p |
 	p := (EpsStar treeSet: {$a}) then: $b asParser.
-	c := SutureCompacter value: p.
+	c := ParserCompacter value: p.
 	self assert: c isRed.! !
 
-!CatTest methodsFor: 'testing - parsing' stamp: 'fbs 10/19/2012 09:53'!
+!CatTest methodsFor: 'testing - parsing' stamp: 'fbs 2/8/2013 08:46'!
 testCompactionWithSingleElementSecondParseTreeIsRed
 	| c p |
 	p := $a asParser then: (EpsStar treeSet: {$b}).
-	c := SutureCompacter value: p.
+	c := ParserCompacter value: p.
 	self assert: c isRed.! !
 
 

@@ -3,10 +3,12 @@ Object subclass: #DerivingParser
 	classVariableNames: 'DeriverBlock EmptyBlock EmptyParser EmptyStringParser NullableBlock ParseNullBlock'
 	poolDictionaries: ''
 	category: 'Parsing-Derivatives'!
-!DerivingParser commentStamp: 'fbs 10/16/2012 09:35' prior: 0!
+!DerivingParser commentStamp: 'fbs 2/21/2013 08:40' prior: 0!
 My subclasses implement parsers that represent the _derivative_ of a context free language. Each time you "derive" a new parser with respect to a character you get a parser that
 * builds a partial parse tree of the input thus far (the sequence of characters used to derive the current parser), and
 * is a parser for the remaining input.
+
+(Of course, you may parse a stream of arbitrary objects, not just characters.)
 
 As a result, my subclasses represent non-blocking parsers: they may consume partial input (say from a socket), storing partial parses until such time as the input is drained.
 
@@ -52,10 +54,9 @@ inspectorClass
 	^ ParserInspector! !
 
 
-!DerivingParser methodsFor: 'parsing' stamp: 'fbs 9/28/2012 09:46'!
+!DerivingParser methodsFor: 'parsing' stamp: 'fbs 2/15/2013 14:49'!
 or: aParser
-	"CANNOT check this first: doing so forces evaluation of the whole graph before we can memoise anything!!"
-	"aParser isEmpty ifTrue: [^ self]."
+	aParser isEmptyParser ifTrue: [^ self].
 	^ Union left: self delay right: aParser delay.! !
 
 !DerivingParser methodsFor: 'parsing' stamp: 'fbs 9/21/2012 18:50'!
@@ -71,10 +72,9 @@ reduce: aUnaryBlock
 star
 	^ StarParser repeating: self.! !
 
-!DerivingParser methodsFor: 'parsing' stamp: 'fbs 9/28/2012 09:46'!
+!DerivingParser methodsFor: 'parsing' stamp: 'fbs 2/18/2013 08:30'!
 then: aParser
-	"CANNOT check this first: doing so forces evaluation of the whole graph before we can memoise anything!!"
-"	aParser isEmpty ifTrue: [^ DerivingParser empty]."
+	aParser isEmptyParser ifTrue: [^ aParser].
 	^ Cat with: self delay with: aParser delay.! !
 
 
@@ -132,6 +132,10 @@ isEmpty
 	"Is the language I define I the empty set?"
 	^ EmptyBlock value: self.! !
 
+!DerivingParser methodsFor: 'testing' stamp: 'fbs 2/15/2013 09:29'!
+isEmptyParser
+	^ false.! !
+
 !DerivingParser methodsFor: 'testing' stamp: 'fbs 8/30/2012 15:59'!
 isEps
 	^ false.! !
@@ -170,40 +174,41 @@ isUnion
 DerivingParser class
 	instanceVariableNames: ''!
 
-!DerivingParser class methodsFor: 'class initialization' stamp: 'fbs 9/28/2012 09:50'!
+!DerivingParser class methodsFor: 'class initialization' stamp: 'fbs 2/12/2013 16:22'!
 initialize
 	EmptyParser := Empty new.
 	EmptyStringParser := EmptyString new.
-	DeriverBlock := self deriverBlock.
-	EmptyBlock := self isEmptyBlock.
-	NullableBlock := self isNullableBlock.
-	ParseNullBlock := self parseNullBlock.! !
+	self flushCaches.! !
 
 
 !DerivingParser class methodsFor: 'instance creation' stamp: 'fbs 8/30/2012 16:00'!
 empty
 	^ EmptyParser! !
 
+!DerivingParser class methodsFor: 'instance creation' stamp: 'fbs 2/14/2013 20:51'!
+emptyExpected: expectedObject actual: actualObject
+	^ Empty expected: expectedObject actual: actualObject.! !
+
 !DerivingParser class methodsFor: 'instance creation' stamp: 'fbs 9/4/2012 08:56'!
 emptyString
 	^ EmptyStringParser! !
 
 
-!DerivingParser class methodsFor: 'private' stamp: 'fbs 1/18/2013 08:51'!
+!DerivingParser class methodsFor: 'private' stamp: 'fbs 2/12/2013 17:23'!
 deriverBlock
 	| d |
 	d := nil.
 	d := [:o :p |
 		p class caseOf: {
 			[Empty] -> [p].
-			[EmptyString] -> [DerivingParser empty].
-			[EpsStar] -> [DerivingParser empty].
+			[EmptyString] -> [DerivingParser emptyExpected: #Nothing actual: o].
+			[EpsStar] -> [DerivingParser emptyExpected: #EndOfStream actual: o].
 			[Literal] -> [(o = p token)
 							ifTrue: [EpsStar treeSet: {o}]
-							ifFalse: [DerivingParser empty]].
+							ifFalse: [DerivingParser emptyExpected: p token actual: o]].
 			[LiteralSet] -> [(p tokens includes: o)
 				ifTrue: [EpsStar treeSet: {o}]
-				ifFalse: [DerivingParser empty]].
+				ifFalse: [DerivingParser emptyExpected: p tokens actual: o]].
 			[StarParser] -> [(d value: o value: p parser) then: p].
 			[Union] -> [[d value: o value: p left] asParser
 				or: [d value: o value: p right] asParser].
@@ -215,8 +220,7 @@ deriverBlock
 				ifFalse: [[(d value: o value: p first)] asParser then: p second]].
 			[Red] -> [(d value: o value: p parser) reduce: p reducer].
 			[DelayedParser] -> [d value: o value: p force].
-			[DelegateParser] -> [DelegateParser new parser: (d value: o value: p parser)].
-			[Suture] -> [p]}
+			[DelegateParser] -> [DelegateParser new parser: (d value: o value: p parser)]}
 		otherwise: [Error signal: 'derivative not defined for ', p className]] memoized.
 	^ d! !
 
@@ -227,7 +231,7 @@ flushCaches
 	NullableBlock := self isNullableBlock.
 	ParseNullBlock := self parseNullBlock.! !
 
-!DerivingParser class methodsFor: 'private' stamp: 'fbs 2/1/2013 08:58'!
+!DerivingParser class methodsFor: 'private' stamp: 'fbs 2/8/2013 08:39'!
 isEmptyBlock
 	| e |
 	e := nil.
@@ -243,12 +247,11 @@ isEmptyBlock
 			[Cat] -> [(e value: p first) or: [e value: p second]].
 			[Red] -> [e value: p parser].
 			[DelayedParser] -> [e value: p force].
-			[DelegateParser] -> [p isResolved ifTrue: [e value: p parser] ifFalse: ["We can't say!!" false]].
-			[Suture] -> [false "This is a lie: we cannot know. However, we don't want this marker node to disappear."]}
+			[DelegateParser] -> [p isResolved ifTrue: [e value: p parser] ifFalse: ["We can't say!!" false]]}
 			otherwise: [Error signal: 'isEmpty not defined for ', p className]] lfpWithBottom: false.
 	^ e.! !
 
-!DerivingParser class methodsFor: 'private' stamp: 'fbs 1/18/2013 08:50'!
+!DerivingParser class methodsFor: 'private' stamp: 'fbs 2/8/2013 08:39'!
 isNullableBlock
 	| n |
 	n := nil.
@@ -264,12 +267,11 @@ isNullableBlock
 			[Red] -> [n value: p parser].
 			[StarParser] -> [(n value: p parser) or: [p parser isEmpty]].
 			[DelayedParser] -> [n value: p force].
-			[DelegateParser] -> [n value: p parser].
-			[Suture] -> [false "This is a lie!! We cannot know."]}
+			[DelegateParser] -> [n value: p parser]}
 		otherwise: [Error signal: 'isNullable not defined for ', p className]] lfpWithBottom: false.
 	^ n.! !
 
-!DerivingParser class methodsFor: 'private' stamp: 'fbs 1/18/2013 08:49'!
+!DerivingParser class methodsFor: 'private' stamp: 'fbs 2/8/2013 08:39'!
 parseNullBlock
 	| pn |
 	pn := nil.
@@ -289,8 +291,7 @@ parseNullBlock
 			[Red] -> [(pn value: p parser) collect: p reducer].
 			[StarParser] -> [Set newFrom: #(#())].
 			[DelayedParser] -> [pn value: p force].
-			[DelegateParser] -> [p isResolved ifFalse: [UnresolvedDelegate accessing: p]. pn value: p parser].
-			[Suture] -> [Set new]}
+			[DelegateParser] -> [p isResolved ifFalse: [UnresolvedDelegate accessing: p]. pn value: p parser]}
 		otherwise: [Error signal: 'parseNull not defined for ', p className]] lfpWithBottom: Set new.
 	^ pn.! !
 

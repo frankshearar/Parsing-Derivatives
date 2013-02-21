@@ -11,3 +11,8 @@ interleave: aXTReadStream
 			s].
 		[output put: next value get]
 			on: Incomplete do: [output put: next value get]].! !
+
+!XTReadStream methodsFor: '*Parsing-Derivatives' stamp: 'fbs 2/11/2013 21:04'!
+positionTracking
+	"Return an XTReadStream capable of calculating the current line/column number."
+	^ XTPositionTrackingStream on: self.! !
