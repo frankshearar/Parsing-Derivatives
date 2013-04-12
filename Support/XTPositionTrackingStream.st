@@ -37,3 +37,21 @@ initialize
 	super initialize.
 	columnNumber := 0.
 	lineNumber := 0.! !
+
+
+!XTPositionTrackingStream methodsFor: 'parsing' stamp: 'fbs 4/12/2013 22:12'!
+parsing: aParser
+	"Return an XTReadStream that takes a parser aParser, consumes a character C, calculates the derivative of aParser with respect to C, and produces a new parser. Throws a ParseError if it unexpectedly derives Empty."
+	| d derivative parse |
+	derivative := aParser.
+	d := DerivingParser deriverBlock.
+	^ (self transforming: [:input :output |
+		parse := [:next :p | | drv |
+			drv := ParserCompacter value: (d value: next value: p).
+			drv isEmptyParser
+				ifTrue: [ParseError signalLine: input lineNumber column: input columnNumber error: drv error]
+				ifFalse: [drv]].
+		derivative := parse value: input get value: derivative.
+		output write: derivative])
+			contentsSpecies: Array;
+			yourself.! !
