@@ -30,10 +30,6 @@ force
 	^ self.! !
 
 
-!DerivingParser methodsFor: 'deriving' stamp: 'fbs 9/28/2012 09:52'!
-d: anObject
-	^ DeriverBlock value: anObject value: self.! !
-
 
 !DerivingParser methodsFor: 'evaluating' stamp: 'fbs 9/20/2012 17:13'!
 whenNullable: aUnaryBlock
@@ -224,9 +220,8 @@ deriverBlock
 		otherwise: [Error signal: 'derivative not defined for ', p className]] memoized.
 	^ d! !
 
-!DerivingParser class methodsFor: 'private' stamp: 'fbs 10/25/2012 09:38'!
+!DerivingParser class methodsFor: 'private' stamp: 'fbs 4/13/2013 23:46'!
 flushCaches
-	DeriverBlock := self deriverBlock.
 	EmptyBlock := self isEmptyBlock.
 	NullableBlock := self isNullableBlock.
 	ParseNullBlock := self parseNullBlock.! !

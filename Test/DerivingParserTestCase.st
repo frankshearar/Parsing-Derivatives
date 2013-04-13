@@ -68,14 +68,14 @@ testNeverIsChildOfSelf
 	self deny: (p isChildOf: p).! !
 
 
-!DerivingParserTestCase methodsFor: 'testing - deriving' stamp: 'fbs 10/25/2012 09:31'!
+!DerivingParserTestCase methodsFor: 'testing - deriving' stamp: 'fbs 4/13/2013 23:38'!
 testDReturnsDerivative
 	| d pn |
 	d := DerivingParser deriverBlock.
 	pn := DerivingParser parseNullBlock.
 	self
 		assert: (pn value: (d value: $1 value: self sampleParser))
-		equals: (self sampleParser d: $1) parseNull.! !
+		equals: (d value: $1 value: self sampleParser) parseNull.! !
 
 
 !DerivingParserTestCase methodsFor: 'testing - parsing' stamp: 'fbs 8/30/2012 18:14'!
