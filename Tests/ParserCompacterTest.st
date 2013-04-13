@@ -93,6 +93,24 @@ testCanCompactUnionWithCyclicSubparser
 	self assert: c isLiteral.
 	self assert: 2 equals: c token."! !
 
+!ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 4/13/2013 23:23'!
+testCompactedCatParsersPreserveErrorInformation
+	| c p |
+	p := Cat with: (DerivingParser emptyExpected: 'expected' actual: 'actual') with: ($2 asParser).
+	c := ParserCompacter value: p.
+	self assert: c isEmpty description: 'Compacted parser not empty'.
+	self assert: 'expected' equals: c expected.
+	self assert: 'actual' equals: c actual.! !
+
+!ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 4/13/2013 23:27'!
+testCompactedCatParsersPreserveErrorInformationWithTrailingEmptyParser
+	| c p |
+	p := Cat with: ($2 asParser) with: (DerivingParser emptyExpected: 'expected' actual: 'actual').
+	c := ParserCompacter value: p.
+	self assert: c isEmpty description: 'Compacted parser not empty'.
+	self assert: 'expected' equals: c expected.
+	self assert: 'actual' equals: c actual.! !
+
 !ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 2/8/2013 08:44'!
 testCompactionDiscardsEmptyUnionSubparsers
 	| c p |

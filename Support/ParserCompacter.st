@@ -38,7 +38,7 @@ compact: aParser
 			[StarParser] -> [self compactStar: aParser]}
 		otherwise: [aParser]).! !
 
-!ParserCompacter methodsFor: 'private' stamp: 'fbs 2/15/2013 14:31'!
+!ParserCompacter methodsFor: 'private' stamp: 'fbs 4/13/2013 23:28'!
 compactCat: aCat
 	| c1 c2 |
 	c1 := self cached: aCat first.
@@ -46,11 +46,11 @@ compactCat: aCat
 	
 	c1 whenNullable: [:singleToken |
 		^ c2 reduce: [:w2 | singleToken asArray , w2 asArray]].
-	c1 isEmpty ifTrue: [^ DerivingParser empty].
+	c1 isEmpty ifTrue: [^ DerivingParser emptyExpected: c1 expected actual: c1 actual].
 	
 	c2 whenNullable: [:singleToken |
 		^ c1 reduce: [:w1 | w1 asArray , singleToken asArray]].
-	c2 isEmpty ifTrue: [^ DerivingParser empty].
+	c2 isEmpty ifTrue: [^ DerivingParser emptyExpected: c2 expected actual: c2 actual].
 
 	^ ((c1 == aCat first) and: [c2 == aCat second])
 		ifTrue: [aCat]
