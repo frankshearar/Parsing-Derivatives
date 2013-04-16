@@ -21,9 +21,11 @@ testIsDelayed
 testIsDelegate
 	self deny: self sampleParser isDelegate.! !
 
-!DerivingParserTestCase methodsFor: 'testing - testing' stamp: 'fbs 8/30/2012 16:03'!
+!DerivingParserTestCase methodsFor: 'testing - testing' stamp: 'fbs 4/15/2013 21:14'!
 testIsEmpty
-	self deny: self sampleParser isEmpty.! !
+	| e |
+	e := DerivingParser isEmptyBlock.
+	self deny: (e value: self sampleParser).! !
 
 !DerivingParserTestCase methodsFor: 'testing - testing' stamp: 'fbs 2/15/2013 09:30'!
 testIsEmptyParser
@@ -84,13 +86,14 @@ testAnythingOrEmptyIsItself
 	p := self sampleParser.
 	self assert: (p or: DerivingParser empty) == p.! !
 
-!DerivingParserTestCase methodsFor: 'testing - parsing' stamp: 'fbs 2/18/2013 08:34'!
+!DerivingParserTestCase methodsFor: 'testing - parsing' stamp: 'fbs 4/15/2013 22:08'!
 testAnythingThenEmptyIsEmpty
-	| p e cat |
-	e := DerivingParser emptyExpected: 1 actual: 2.
+	| p e empty cat |
+	e := DerivingParser isEmptyBlock.
+	empty := DerivingParser emptyExpected: 1 actual: 2.
 	p := self sampleParser.
-	cat := p then: e.
-	self assert: cat isEmpty.
+	cat := p then: empty.
+	self assert: (e value: cat).
 	self assert: 1 equals: cat expected.
 	self assert: 2 equals: cat actual.! !
 
@@ -107,11 +110,12 @@ testEmptyOrAnythingIsItself
 	p := self sampleParser.
 	self assert: (DerivingParser empty or: p) == p.! !
 
-!DerivingParserTestCase methodsFor: 'testing - parsing' stamp: 'fbs 8/31/2012 09:23'!
+!DerivingParserTestCase methodsFor: 'testing - parsing' stamp: 'fbs 4/15/2013 22:08'!
 testEmptyThenAnythingIsEmpty
-	| p |
+	| e p |
+	e := DerivingParser isEmptyBlock.
 	p := self sampleParser.
-	self assert: (DerivingParser empty then: p) isEmpty.! !
+	self assert: (e value: (DerivingParser empty then: p)).! !
 
 !DerivingParserTestCase methodsFor: 'testing - parsing' stamp: 'fbs 8/30/2012 17:33'!
 testForce

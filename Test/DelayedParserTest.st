@@ -35,9 +35,11 @@ testDelayingADelayedParserIsaNoOp
 	self assert: p == d.! !
 
 
-!DelayedParserTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 17:01'!
+!DelayedParserTest methodsFor: 'testing - deriving' stamp: 'fbs 4/15/2013 22:05'!
 testDerivativeIsDerivativeOfSubparser
-	self assert: (DerivingParser deriverBlock value: $b value: ($a asParser delay)) isEmpty.! !
+	| e |
+	e := DerivingParser isEmptyBlock.
+	self assert: (e value: (DerivingParser deriverBlock value: $b value: ($a asParser delay))).! !
 
 
 !DelayedParserTest methodsFor: 'testing - parsing' stamp: 'fbs 10/24/2012 21:41'!

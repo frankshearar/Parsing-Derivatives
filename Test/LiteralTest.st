@@ -14,11 +14,12 @@ sampleParser
 	^ $a asParser.! !
 
 
-!LiteralTest methodsFor: 'testing - deriving' stamp: 'fbs 2/12/2013 16:13'!
+!LiteralTest methodsFor: 'testing - deriving' stamp: 'fbs 4/15/2013 21:18'!
 testDerivativeOfLiteralWrtAnotherObjectIsEmpty
-	| d |
+	| d e |
+	e := DerivingParser isEmptyBlock.
 	d := DerivingParser deriverBlock value: $b value: $a asParser.
-	self assert: d isEmpty.
+	self assert: (e value: d).
 	self assert: 'Expected a <$a>, found a <$b>' equals: d error.! !
 
 !LiteralTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 16:59'!

@@ -19,3 +19,11 @@ testInterleavingPermitsLeftStreamToStarve
 !ParsingXTReadStreamExtensionTest methodsFor: 'testing' stamp: 'fbs 10/31/2012 13:10'!
 testInterleavingPermitsRightStreamToStarve
 	self assert: #(1 2 1) equals: (([1] reading interleave: #(2) reading) read: 3).! !
+
+!ParsingXTReadStreamExtensionTest methodsFor: 'testing' stamp: 'fbs 4/15/2013 20:59'!
+testParsingAutomaticallyTracksPosition
+	| pn |
+	pn := DerivingParser parseNullBlock.
+	self
+		assert: #(#(#($a)) #(#($a $a)) #(#($a $a $a))) "Each element is a parse _forest_."
+		equals: (('aaa' reading parsing: $a asParser star) rest collect: [:parser | (pn value: parser) asArray]).! !

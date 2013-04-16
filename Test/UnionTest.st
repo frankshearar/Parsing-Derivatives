@@ -57,15 +57,16 @@ testUnionOfCompactedParsersCompactsToItself
 	self assert: u == (ParserCompacter value: u).! !
 
 
-!UnionTest methodsFor: 'testing - deriving' stamp: 'fbs 2/14/2013 21:50'!
+!UnionTest methodsFor: 'testing - deriving' stamp: 'fbs 4/15/2013 21:21'!
 testCompactedEmptyUnionGivesDecentErrorMessage
-	| c u |
+	| c e u |
 	"The result of having derived '1 asParser or: 2 asParser' with respect to 3."
+	e := DerivingParser isEmptyBlock.
 	u := Union
 		left: (DerivingParser emptyExpected: 1actual: 3)
 		right: (DerivingParser emptyExpected: 2 actual: 3).
 	c := ParserCompacter value: u.
-	self assert: c isEmpty.
+	self assert: (e value: c).
 	self assert: #(1 2) equals: c expected.
 	self assert: 3 equals: c actual.
 	self assert: 'Expected one of <1, 2>, found a <3>' equals: c error.! !

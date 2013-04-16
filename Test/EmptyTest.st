@@ -9,20 +9,23 @@ sampleParser
 	^ DerivingParser empty.! !
 
 
-!EmptyTest methodsFor: 'testing - testing' stamp: 'fbs 8/30/2012 16:05'!
+!EmptyTest methodsFor: 'testing - testing' stamp: 'fbs 4/15/2013 21:17'!
 testIsEmpty
-	self assert: self sampleParser isEmpty.! !
+	| e |
+	e := DerivingParser isEmptyBlock.
+	self assert: (e value: self sampleParser).! !
 
 !EmptyTest methodsFor: 'testing - testing' stamp: 'fbs 2/15/2013 09:30'!
 testIsEmptyParser
 	self assert: self sampleParser isEmptyParser.! !
 
 
-!EmptyTest methodsFor: 'testing - deriving' stamp: 'fbs 2/21/2013 08:44'!
+!EmptyTest methodsFor: 'testing - deriving' stamp: 'fbs 4/15/2013 22:09'!
 testDerivativeIsItself
-	| D specialE |
+	| D e specialE |
+	e := DerivingParser isEmptyBlock.
 	D := DerivingParser deriverBlock.
-	self assert: (D value: $a value: DerivingParser empty) isEmpty.
+	self assert: (e value: (D value: $a value: DerivingParser empty)).
 	self assert: (D value: $a value: DerivingParser empty) == DerivingParser empty description: 'Exact empty not returned (unspecified empty)'.
 	
 	specialE := DerivingParser emptyExpected: 1 actual: 2.

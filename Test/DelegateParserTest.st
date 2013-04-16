@@ -63,12 +63,13 @@ testUnresolvedDelegateIsNotResolved
 	self deny: DelegateParser new isResolved.! !
 
 
-!DelegateParserTest methodsFor: 'testing - parsing' stamp: 'fbs 2/8/2013 08:46'!
+!DelegateParserTest methodsFor: 'testing - parsing' stamp: 'fbs 4/15/2013 22:06'!
 testCompactionIsCompactionOfSubparser
-	| p d |
+	| d e p |
+	e := DerivingParser isEmptyBlock.
 	p := DerivingParser empty.
 	d := DelegateParser new parser: p.
-	self assert: (ParserCompacter value: d) parser isEmpty.! !
+	self assert: (e value: (ParserCompacter value: d) parser).! !
 
 !DelegateParserTest methodsFor: 'testing - parsing' stamp: 'fbs 10/12/2012 18:51'!
 testParseNullIsThatOfSubparser

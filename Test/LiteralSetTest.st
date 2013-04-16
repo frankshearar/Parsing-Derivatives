@@ -9,11 +9,12 @@ sampleParser
 	^ LiteralSet tokens: {$a. $b. $c}.! !
 
 
-!LiteralSetTest methodsFor: 'testing - deriving' stamp: 'fbs 2/12/2013 17:21'!
+!LiteralSetTest methodsFor: 'testing - deriving' stamp: 'fbs 4/15/2013 21:18'!
 testDerivativeOfLiteralWrtAnotherObjectIsEmpty
-	| d |
+	| d e |
+	e := DerivingParser isEmptyBlock.
 	d := DerivingParser deriverBlock value: $d value: self sampleParser.
-	self assert: d isEmpty.
+	self assert: (e value: d).
 	self assert: 'Expected one of <$a, $b, $c>, found a <$d>' equals: d error.! !
 
 !LiteralSetTest methodsFor: 'testing - deriving' stamp: 'fbs 2/1/2013 08:55'!

@@ -4,9 +4,11 @@ TestCase subclass: #DerivingParserTest
 	poolDictionaries: ''
 	category: 'Parsing-Derivatives-Test'!
 
-!DerivingParserTest methodsFor: 'testing - instance creation' stamp: 'fbs 9/4/2012 08:55'!
+!DerivingParserTest methodsFor: 'testing - instance creation' stamp: 'fbs 4/15/2013 22:06'!
 testEmptyIsEmpty
-	self assert: DerivingParser empty isEmpty.! !
+	| e |
+	e := DerivingParser isEmptyBlock.
+	self assert: (e value: DerivingParser empty).! !
 
 !DerivingParserTest methodsFor: 'testing - instance creation' stamp: 'fbs 2/15/2013 09:29'!
 testEmptyIsEmptyParser

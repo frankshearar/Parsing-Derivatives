@@ -49,23 +49,25 @@ testCanCompactRedDelegateRed
 	self assert: c parser isEpsStar.
 	self assert: #(4) asSet equals: c parseNull.! !
 
-!ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 2/15/2013 14:18'!
+!ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 4/15/2013 21:20'!
 testCanCompactRedEmpty
-	| c p |
+	| c e p |
 	"Red -> Empty => Empty"
+	e := DerivingParser isEmptyBlock.
 	p := (DerivingParser emptyExpected: 1 actual: 2) reduce: #yourself.
 	c := ParserCompacter value: p.
-	self assert: c isEmpty.
+	self assert: (e value: c).
 	self assert: 1 equals: c expected.
 	self assert: 2 equals: c actual.! !
 
-!ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 2/15/2013 09:28'!
+!ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 4/15/2013 21:20'!
 testCanCompactStarEmpty
-	| c p |
+	| c e p |
 	"Empty star -> Empty"
+	e := DerivingParser isEmptyBlock.
 	p := (DerivingParser emptyExpected: 1 actual: 2) star.
 	c := ParserCompacter value: p.
-	self assert: c isEmpty.
+	self assert: (e value: c).
 	self assert: 1 equals: c expected.
 	self assert: 2 equals: c actual.! !
 
@@ -93,21 +95,23 @@ testCanCompactUnionWithCyclicSubparser
 	self assert: c isLiteral.
 	self assert: 2 equals: c token."! !
 
-!ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 4/13/2013 23:23'!
+!ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 4/15/2013 21:20'!
 testCompactedCatParsersPreserveErrorInformation
-	| c p |
+	| c e p |
+	e := DerivingParser isEmptyBlock.
 	p := Cat with: (DerivingParser emptyExpected: 'expected' actual: 'actual') with: ($2 asParser).
 	c := ParserCompacter value: p.
-	self assert: c isEmpty description: 'Compacted parser not empty'.
+	self assert: (e value: c) description: 'Compacted parser not empty'.
 	self assert: 'expected' equals: c expected.
 	self assert: 'actual' equals: c actual.! !
 
-!ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 4/13/2013 23:27'!
+!ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 4/15/2013 21:20'!
 testCompactedCatParsersPreserveErrorInformationWithTrailingEmptyParser
-	| c p |
+	| c e p |
+	e := DerivingParser isEmptyBlock.
 	p := Cat with: ($2 asParser) with: (DerivingParser emptyExpected: 'expected' actual: 'actual').
 	c := ParserCompacter value: p.
-	self assert: c isEmpty description: 'Compacted parser not empty'.
+	self assert: (e value: c) description: 'Compacted parser not empty'.
 	self assert: 'expected' equals: c expected.
 	self assert: 'actual' equals: c actual.! !
 
@@ -134,20 +138,24 @@ testCompactionOfAnythingOrEmptyIsAnything
 	self assert: (ParserCompacter value: ($a asParser or: DerivingParser empty)) isLiteral.
 	self assert: (ParserCompacter value: ((EpsStar treeSet: {1}) or: DerivingParser empty)) isEpsStar.! !
 
-!ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 2/8/2013 08:44'!
+!ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 4/15/2013 21:20'!
 testCompactionOfAnythingThenEmptyIsEmpty
-	self assert: (ParserCompacter value: ($a asParser then: DerivingParser empty)) isEmpty.
-	self assert: (ParserCompacter value: ((EpsStar treeSet: {1}) then: DerivingParser empty)) isEmpty.! !
+	| e |
+	e := DerivingParser isEmptyBlock.
+	self assert: (e value: (ParserCompacter value: ($a asParser then: DerivingParser empty))).
+	self assert: (e value: (ParserCompacter value: ((EpsStar treeSet: {1}) then: DerivingParser empty))).! !
 
 !ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 2/8/2013 08:44'!
 testCompactionOfEmptyOrAnythingIsAnything
 	self assert: (ParserCompacter value: (DerivingParser empty or: $a asParser)) isLiteral.
 	self assert: (ParserCompacter value: (DerivingParser empty or: (EpsStar treeSet: {1}))) isEpsStar.! !
 
-!ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 2/8/2013 08:44'!
+!ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 4/15/2013 21:21'!
 testCompactionOfEmptyThenAnythingIsEmpty
-	self assert: (ParserCompacter value: (DerivingParser empty then: $a asParser)) isEmpty.
-	self assert: (ParserCompacter value: (DerivingParser empty then: (EpsStar treeSet: {1}))) isEmpty.! !
+	| e |
+	e := DerivingParser isEmptyBlock.
+	self assert: (e value: (ParserCompacter value: (DerivingParser empty then: $a asParser))).
+	self assert: (e value: (ParserCompacter value: (DerivingParser empty then: (EpsStar treeSet: {1})))).! !
 
 !ParserCompacterTest methodsFor: 'testing' stamp: 'fbs 2/8/2013 08:44'!
 testCompactionRemovesUnnecessaryDelegates

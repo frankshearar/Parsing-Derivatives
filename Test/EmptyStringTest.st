@@ -23,10 +23,12 @@ testIsNullable
 	self assert: (DerivingParser isNullableBlock value: self sampleParser).! !
 
 
-!EmptyStringTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 17:00'!
+!EmptyStringTest methodsFor: 'testing - deriving' stamp: 'fbs 4/15/2013 22:08'!
 testDerivativeIsEmpty
+	| e |
+	e := DerivingParser isEmptyBlock.
 	self
-		assert: (DerivingParser deriverBlock value: $a value: (DerivingParser emptyString)) isEmpty
+		assert: (e value: (DerivingParser deriverBlock value: $a value: (DerivingParser emptyString)))
 		description: 'd(_, eps*) == empty'! !
 
 

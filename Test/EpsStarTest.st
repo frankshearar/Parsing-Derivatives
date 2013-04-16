@@ -9,10 +9,12 @@ sampleParser
 	^ EpsStar treeSet: {$a}.! !
 
 
-!EpsStarTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 17:00'!
+!EpsStarTest methodsFor: 'testing - deriving' stamp: 'fbs 4/15/2013 21:18'!
 testDerivativeIsEmpty
+	| e |
+	e := DerivingParser isEmptyBlock.
 	self
-		assert: (DerivingParser deriverBlock value: $a value: (EpsStar treeSet: {})) isEmpty
+		assert: (e value: (DerivingParser deriverBlock value: $a value: (EpsStar treeSet: {})))
 		description: 'd(_, eps*) == empty'! !
 
 

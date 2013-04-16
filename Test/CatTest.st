@@ -56,9 +56,10 @@ testSubParsersReturnsFirstAndSecond
 	self assert: {p first. p second} equals: p subParsers.! !
 
 
-!CatTest methodsFor: 'testing - deriving' stamp: 'fbs 10/15/2012 09:45'!
+!CatTest methodsFor: 'testing - deriving' stamp: 'fbs 4/15/2013 21:22'!
 testDerivativeFirstParserNullable
-	| p d r |
+	| d e p r |
+	e := DerivingParser isEmptyBlock.
 	r := 1 asParser.
 	p := (EpsStar treeSet: #(1)) then: r.
 	d := DerivingParser deriverBlock value: 1 value: p.
@@ -67,7 +68,7 @@ testDerivativeFirstParserNullable
 	self assert: d left first isEpsStar.
 	self assert: #(1) asSet equals: d left second treeSet.
 	self assert: d right isCat.
-	self assert: d right first isEmpty.
+	self assert: (e value: d right first).
 	self assert: r equals: d right second.! !
 
 !CatTest methodsFor: 'testing - deriving' stamp: 'fbs 10/16/2012 17:08'!
