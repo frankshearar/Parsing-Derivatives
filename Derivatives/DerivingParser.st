@@ -165,6 +165,11 @@ isStar
 isUnion
 	^ false.! !
 
+
+!DerivingParser methodsFor: 'as yet unclassified' stamp: 'fbs 4/17/2013 17:35'!
+optional
+	^ self or: DerivingParser emptyString! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 DerivingParser class

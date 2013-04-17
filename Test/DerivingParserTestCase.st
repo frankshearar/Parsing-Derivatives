@@ -123,6 +123,13 @@ testForce
 	p := self sampleParser.
 	self assert: p force == p.! !
 
+!DerivingParserTestCase methodsFor: 'testing - parsing' stamp: 'fbs 4/17/2013 17:38'!
+testOptionalMeansItAcceptsEmptyInput
+	| p pn |
+	pn := DerivingParser parseNullBlock.
+	p := self sampleParser optional.
+	self assert: ((pn value: p) add: #(); yourself) equals: (pn value: p).! !
+
 
 
 !DerivingParserTestCase methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:35'!
