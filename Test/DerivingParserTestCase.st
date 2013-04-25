@@ -130,6 +130,21 @@ testOptionalMeansItAcceptsEmptyInput
 	p := self sampleParser optional.
 	self assert: ((pn value: p) add: #(); yourself) equals: (pn value: p).! !
 
+!DerivingParserTestCase methodsFor: 'testing - parsing' stamp: 'fbs 4/25/2013 17:20'!
+testOptionalMeansItAcceptsSameLanguageAsNonOptional
+	"Well, the first N generated sentences, at least."
+	| p po pn num |
+	num := 100.
+	pn := DerivingParser parseNullBlock.
+	p := self sampleParser.
+	po := p optional.
+	[(p generate collecting: [:o | | origParses optParses sentence |
+		sentence := o asArray.
+		origParses := ((sentence reading parsing: p) collecting: pn) read: num.
+		optParses := ((sentence reading parsing: po) collecting: pn) read: num.
+		self assert: origParses equals: optParses]) read: num]
+		on: Incomplete do: ["expected"].! !
+
 
 
 !DerivingParserTestCase methodsFor: 'testing - printing' stamp: 'fbs 10/24/2012 09:35'!

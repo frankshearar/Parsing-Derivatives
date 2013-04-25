@@ -103,14 +103,14 @@ compactStar: aStar
 	sub isEmpty ifTrue: [^ sub].
 	^ aStar! !
 
-!ParserCompacter methodsFor: 'private' stamp: 'fbs 2/14/2013 21:48'!
+!ParserCompacter methodsFor: 'private' stamp: 'fbs 4/19/2013 17:18'!
 compactUnion: aUnion
 	| c1 c2 |
 	c1 := self cached: aUnion left.
 	c2 := self cached: aUnion right.
 	(c1 isEmpty and: [c2 isEmpty]) ifTrue: [
 		^ DerivingParser
-			emptyExpected: (c1 expected asArray , c2 expected asArray)
+			emptyExpected: ({c1 expected} , {c2 expected})
 			actual: c2 actual].
 	c1 isEmpty ifTrue: [^ c2].
 	c2 isEmpty ifTrue: [^ c1].
